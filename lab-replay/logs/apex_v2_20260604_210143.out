@@ -1,0 +1,23 @@
+=== APEX MODE ===
+Config: {'streams': 192, 'headers': 6144, 'hold': 120, 'drip': 10, 'hold_mode': 'hard_hold', 'waves_per_conn': 2, 'wave_gap_sec': 0.25, 'conn_stagger_sec': 0.02, 'bomb_mode': 'sequential', 'drip_bytes': 1}
+Est. server RAM: 7766 MiB
+
+{
+  "run_id": "48b35684",
+  "timestamp": "2026-06-04T21:13:23.966032+00:00",
+  "strategy": "apex",
+  "target": "127.0.0.1:8443",
+  "connections_requested": 50,
+  "connections_established": 50,
+  "connections_bomb_ok": 44,
+  "connections_active_end": 37,
+  "wire_mb": 99.23,
+  "hold_sec": 120,
+  "probe_before_code": 200,
+  "probe_after_code": 200,
+  "probe_worst_latency": 0.01,
+  "server_down": true,
+  "oom_likely": true,
+  "duration_sec": 183.4,
+  "notes": "streams=192 headers=6144 waves=2 mode=hard_hold"
+}

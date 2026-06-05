@@ -1,0 +1,26 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+
+# Local secrets / config
+allowed_targets.json
+config/tunnel.json
+config/cli_settings.json
+
+# Verbose benchmark artifacts
+benchmark/logs/mp_*/
+benchmark/logs/wave_*.log
+benchmark/logs/campaign_*.log
+benchmark/logs/optimized_oom_*.log
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Windows lab transient
+benchmark/logs/iis_apex_*/

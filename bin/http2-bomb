@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Wrapper for http2_bomb_cli.py — use from PATH or ./bin/http2-bomb
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PY="${HTTP2_BOMB_PYTHON:-$ROOT/.venv/bin/python3}"
+if [[ ! -x "$PY" ]]; then
+  PY="$(command -v python3)"
+fi
+exec "$PY" "$ROOT/http2_bomb_cli.py" "$@"

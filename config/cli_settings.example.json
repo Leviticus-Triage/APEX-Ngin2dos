@@ -1,0 +1,13 @@
+{
+  "default_host": "127.0.0.1",
+  "default_port": 443,
+  "default_variant": "nginx",
+  "default_profile": "safe",
+  "default_benchmark_mode": "apex_scaled",
+  "default_connections": 50,
+  "max_runtime_sec": 600,
+  "allowed_targets_path": "allowed_targets.json",
+  "tunnel_config_path": "config/tunnel.json",
+  "scope_description": "",
+  "language": "de"
+}

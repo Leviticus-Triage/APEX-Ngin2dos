@@ -1,0 +1,10 @@
+[
+  {
+    "host": "staging.example.com",
+    "note": "Eigener Staging-Server — Ticket INT-1234"
+  },
+  {
+    "host": "127.0.0.1",
+    "note": "Lokale Lab-Tests"
+  }
+]

@@ -1,0 +1,37 @@
+# MAD Bugs: Month of AI-Discovered Bugs
+
+## What?
+
+We’re here to uncover the most interesting security bugs and exploits with AI, exploring what’s possible when your pair top models with human expertise.
+
+Between now and the end of April 2026, we’ll be dropping what we find in this repo and on [our blog](https://blog.calif.io/t/madbugs).
+
+## A note on the artifacts
+
+The write-ups and PoCs in this series are AI-generated and human-verified. We keep human editing to a minimum so the artifacts document the current state of the art, which means we don't edit out hallucinations or slop. We do verify that the PoCs work. The blog posts are written by humans.
+
+## Bugs and Exploits
+
+* 2026-03-30: [Vim tabpanel modeline RCE affects Vim < 9.2.0272](vim-vs-emacs-vs-claude)
+* 2026-03-30: [GNU Emacs: Multiple Remote Code Execution Vectors on File Open](vim-vs-emacs-vs-claude)
+* 2026-03-31: [Claude Wrote a Full FreeBSD Remote Kernel RCE with Root Shell (CVE-2026-4747)](CVE-2026-4747)
+* 2026-04-06: [Discovering a radare2 0-Day in Zero Day](radare2)
+* 2026-04-07: [GhidraServer PKI User Impersonation via Null Signature](ghidra-server)
+* 2026-04-09: [Feeding Claude Phrack Articles for Fun and Profit: Desync the Planet](rsync)
+* 2026-04-10: [Claude + Humans vs nginx: CVE-2026-27654](nginx-CVE-2026-27654)
+* 2026-04-13: [Codex Hacked a Samsung TV](samsung-tv)
+* 2026-04-14: [Learning to Jailbreak an iPhone with Claude (Part 1)](coruna)
+* 2026-04-16: [qmail-remote RCE via DNS MX Hostname Shell Injection (CVE-2026-41113)](qmail)
+* 2026-04-17: [iTerm2: Arbitrary Code Execution via SSH Integration Escape Sequences](iTerm2)
+* 2026-04-21: [All Your Reverse Engineering Tools Are Belong to US](security-tools-rce)
+  * [Ghidra Client RCE via Unfiltered RMI Deserialisation](ghidra-rmi-rce)
+  * [radare2 RCE via PDB Section Header Command Injection](radare2-pdb-section-rce)
+  * [IDA Pro RCE via Clang Argument Injection](ida-pro)
+  * Binary Ninja — *embargoed*
+* 2026-04-22: [An Apple Kernel Bug, Brought to You by Microsoft (CVE-2026-28825)](CVE-2026-28825)
+* 2026-04-24: [Ladybird Browser RCE via WebAssembly Shared Memory UAF](ladybird)
+* 2026-04-27: [QEMU and UTM Escape via virtio-gpu (ZDI-CAN-27578)](qemu)
+* 2026-05-01: [Finding and Exploiting a 21-Year-Old Vulnerability in PHP](php)
+* 2026-05-07: [CVE-2026-7270: FreeBSD Local Privilege Escalation via execve](freebsd-CVE-2026-7270)
+* 2026-05-28: [An AI Audit of FreeBSD: 15 kernel bugs, including 3 RCEs, 5 LPEs, and a bhyve escape](freebsd)
+* 2026-06-02: [Codex Discovered a Hidden HTTP/2 Bomb](http2-bomb)

