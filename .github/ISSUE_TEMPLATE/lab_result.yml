@@ -1,0 +1,57 @@
+name: Lab Result Submission
+description: Share reproducible benchmark results from an authorized lab
+title: "[Lab]: "
+labels: ["lab-result"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Submit metrics from **your own lab** only. Redact production hostnames.
+  - type: input
+    id: variant
+    attributes:
+      label: Variant
+      placeholder: nginx | httpd | envoy | pingora | iis
+    validations:
+      required: true
+  - type: input
+    id: mode
+    attributes:
+      label: Mode
+      placeholder: apex_scaled | apex_cookie_scaled | apex_iis_mp
+    validations:
+      required: true
+  - type: input
+    id: connections
+    attributes:
+      label: Connections requested
+    validations:
+      required: true
+  - type: input
+    id: bomb_ok
+    attributes:
+      label: connections_bomb_ok
+    validations:
+      required: true
+  - type: input
+    id: wire
+    attributes:
+      label: wire_mb
+  - type: input
+    id: rss
+    attributes:
+      label: Peak RSS / container cap
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Server version, Docker memory cap, OS, commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Exact reproduce command
+      render: shell
+    validations:
+      required: true

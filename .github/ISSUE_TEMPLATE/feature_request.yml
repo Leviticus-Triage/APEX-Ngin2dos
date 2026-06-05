@@ -1,0 +1,35 @@
+name: Feature Request
+description: Suggest an enhancement to APEX modes, variants, or tooling
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / use case
+      description: What gap does this fill for authorized research?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: dropdown
+    id: variant
+    attributes:
+      label: Primary variant
+      options:
+        - nginx / pingora
+        - httpd / envoy
+        - IIS
+        - cross-cutting
+        - lab / docs
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety
+      options:
+        - label: I confirm this preserves authorization gates and lab-first defaults
+          required: true

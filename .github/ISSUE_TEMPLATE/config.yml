@@ -1,0 +1,6 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security policy
+    url: https://github.com/Leviticus-Triage/APEX-Ngin2dos/blob/main/SECURITY.md
+  - name: Notion research page
+    url: https://app.notion.com/p/37530537269d8196a477e358073e8627

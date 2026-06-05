@@ -1,0 +1,57 @@
+name: Bug Report
+description: Report a defect in the harness, CLI, MCP, or lab scripts
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Authorized use only.** Do not include live attack output against third-party hosts without redaction.
+  - type: input
+    id: version
+    attributes:
+      label: Version / commit
+      placeholder: "v1.0.0 or git SHA"
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      options:
+        - benchmark_runner
+        - h2_enhanced / cookie_bomb_enhanced
+        - MCP (http2_bomb_mcp.py)
+        - CLI (http2_bomb_cli.py)
+        - tunnel.py
+        - lab-replay
+        - IIS orchestrator
+        - documentation
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: Command, variant, mode, target (redacted if needed)
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste sanitized output from benchmark/logs or CLI
+      render: shell
