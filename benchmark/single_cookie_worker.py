@@ -11,11 +11,11 @@ sys.path.insert(0, str(BENCH))
 
 from attack_config import CookieAttackConfig  # noqa: E402
 from cookie_bomb_enhanced import (  # noqa: E402
+    CookieConn,
+    bomb_one,
     build_block,
     connect_cookie,
-    bomb_one,
     hold_cookie,
-    CookieConn,
 )
 
 

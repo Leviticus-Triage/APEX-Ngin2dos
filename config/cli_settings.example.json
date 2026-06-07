@@ -9,5 +9,5 @@
   "allowed_targets_path": "allowed_targets.json",
   "tunnel_config_path": "config/tunnel.json",
   "scope_description": "",
-  "language": "de"
+  "language": "en"
 }

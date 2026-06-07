@@ -11,6 +11,8 @@ config/tunnel.json
 config/cli_settings.json
 
 # Verbose benchmark artifacts
+benchmark/logs/benchmark_results.csv
+benchmark/logs/benchmark_runs.jsonl
 benchmark/logs/mp_*/
 benchmark/logs/wave_*.log
 benchmark/logs/campaign_*.log
@@ -24,3 +26,10 @@ benchmark/logs/optimized_oom_*.log
 
 # Windows lab transient
 benchmark/logs/iis_apex_*/
+benchmark/logs/cookie_mp_*/
+benchmark/logs/pipelined_*/
+
+# Lab replay runtime logs
+lab-replay/logs/proxmox_smoke_*.log
+lab-replay/logs/lab_replay_proxmox_*.log
+lab-replay/logs/attack*_mem*.log

@@ -76,23 +76,44 @@ Full detail: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
 ```bash
 git clone https://github.com/Leviticus-Triage/APEX-Ngin2dos.git
 cd APEX-Ngin2dos
-python3 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements-dev.txt
 
-# Interactive CLI
-chmod +x bin/http2-bomb
-./bin/http2-bomb menu
+# Unit tests (no nginx/apache required — runs on your machine)
+pytest -q
 
-# Harmless probe
-./bin/http2-bomb probe --host 127.0.0.1 --port 8443
-
-# Lab benchmark (nginx, local Docker lab)
-./lab-replay/replay.sh start 8g
-python3 benchmark/benchmark_runner.py \
-  --host 127.0.0.1 --port 8443 --variant nginx \
-  --mode apex_scaled --connections 20
+# Real HTTP/2 lab validation → Proxmox ai-workstation (NOT localhost on your laptop)
+chmod +x lab-replay/deploy_proxmox.sh
+./lab-replay/deploy_proxmox.sh smoke          # deploy + 5-conn smoke on remote
+./lab-replay/deploy_proxmox.sh campaign       # full OOM campaign on remote
 ```
+
+**Where things run**
+
+| Step | Where | Target |
+|------|--------|--------|
+| `pytest` | Your laptop | No server needed |
+| `deploy_proxmox.sh` | rsync → **192.168.2.116** | Docker nginx @ `127.0.0.1:8443` *on the VM* |
+| RSS / probe monitoring | Same VM, parallel loop | Does not run from your laptop |
+
+Do **not** run `./bin/http2-bomb probe --host 127.0.0.1 --port 8443` on your laptop unless you started `lab-replay/replay.sh start` locally. Default `127.0.0.1:8443` in `benchmark_runner.py` means **lab loopback on the machine running the harness** (typically ai-workstation after deploy).
+
+Optional local Docker lab (same VM layout, on your machine):
+
+```bash
+./lab-replay/replay.sh start 8g
+./lab-replay/replay.sh probe
+./lab-replay/replay.sh attack 5
+```
+
+### Verification tiers
+
+| Tier | Command | Needs |
+|------|---------|-------|
+| Unit | `pytest -q` | Python venv only |
+| Full local | `./scripts/verify.sh` | + Docker for lab smoke |
+| Proxmox E2E | `./lab-replay/deploy_proxmox.sh smoke` | SSH to ai-workstation |
+| CI | GitHub Actions `test` + `lab-smoke` jobs | automatic on push |
 
 **Authorization required** for any attack profile — see [Legal](#legal--authorized-use).
 
@@ -199,6 +220,8 @@ Sample nginx mitigation configs for vulnerable stacks (pre-1.29.8):
 | [`docs/LAB_RESULTS.md`](docs/LAB_RESULTS.md) | Verified metrics, A/B, Proxmox, Win11 IIS |
 | [`docs/DISCLOSURE.md`](docs/DISCLOSURE.md) | CVE/fix status per stack |
 | [`docs/NOTION.md`](docs/NOTION.md) | Link + sync with Notion research page |
+| [`docs/OPTIMIZATION.md`](docs/OPTIMIZATION.md) | Release roadmap (P0–P3) |
+| [`RELEASE_NOTES_v1.0.1.md`](RELEASE_NOTES_v1.0.1.md) | v1.0.1 changelog |
 | [`benchmark/README.md`](benchmark/README.md) | Harness modes, CSV/JSONL logging |
 | [`SECURITY.md`](SECURITY.md) | Responsible use policy |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | How to contribute lab data |

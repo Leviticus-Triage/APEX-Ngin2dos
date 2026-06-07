@@ -1,7 +1,7 @@
 """Attack parameter profiles — tuned for efficiency vs sustained downtime."""
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 
 # nginx default http2_max_concurrent_streams = 128
 H2_MAX_STREAMS_PER_CONN = 128

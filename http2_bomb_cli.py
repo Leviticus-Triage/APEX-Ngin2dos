@@ -9,7 +9,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import shutil
 import subprocess
 import sys
 import textwrap
@@ -50,13 +49,12 @@ BANNER = r"""
 |_| |_| |_| |_|  |___| |____/ \___/|____/|_|  |_|
 
  HTTP/2 HPACK-Bomb — Terminal CLI (califio PoCs)
- Nur autorisierte Ziele | v2 + Tunnel + Benchmark
+ Authorized targets only | v2 + Tunnel + Benchmark
 """
 
 try:
     from rich.console import Console
     from rich.panel import Panel
-    from rich.table import Table
 
     _console = Console()
     HAS_RICH = True
@@ -115,7 +113,7 @@ def _prompt(text: str, default: str = "") -> str:
 
 
 def _prompt_yes(text: str) -> bool:
-    return _prompt(f"{text} (j/n)", "n").lower() in ("j", "y", "ja", "yes")
+    return _prompt(f"{text} (y/n)", "n").lower() in ("y", "yes")
 
 
 def _apply_saved_tunnel() -> None:
@@ -158,10 +156,10 @@ def cmd_run(args: argparse.Namespace) -> int:
     settings = load_cli_settings()
     scope = args.scope or settings.get("scope_description", "")
     if not args.yes:
-        if not _prompt_yes("Schriftliche Erlaubnis für dieses Ziel vorhanden?"):
-            print("Abgebrochen — authorization_confirmed erforderlich.")
+        if not _prompt_yes("Written authorization for this target?"):
+            print("Cancelled — authorization_confirmed is required.")
             return 1
-        scope = _prompt("Scope (Ticket/Kunde, min. 12 Zeichen)", scope)
+        scope = _prompt("Scope (ticket/customer, min. 12 characters)", scope)
     import asyncio
 
     result = asyncio.run(
@@ -180,13 +178,13 @@ def cmd_run(args: argparse.Namespace) -> int:
         )
     )
     print(result)
-    return 0 if not result.startswith("ABGELEHNT") else 1
+    return 0 if not result.startswith("REJECTED") else 1
 
 
 def cmd_benchmark(args: argparse.Namespace) -> int:
     scope = args.scope
     if not args.yes:
-        if not _prompt_yes("Schriftliche Erlaubnis für Benchmark?"):
+        if not _prompt_yes("Written authorization for this benchmark?"):
             return 1
         scope = _prompt("Scope", scope or "Lab benchmark authorized")
     import asyncio
@@ -258,7 +256,7 @@ def cmd_mcp_info(_args: argparse.Namespace) -> int:
         "http2-bomb": {
             "command": py,
             "args": [str(PLUGIN_ROOT / "http2_bomb_mcp.py")],
-            "description": "HTTP/2 HPACK-bomb PoC (califio) — nur autorisierte Ziele",
+            "description": "HTTP/2 HPACK-bomb PoC (califio) — authorized targets only",
             "timeout": 900,
         }
     }
@@ -322,15 +320,15 @@ def interactive_menu() -> int:
         print(f"Default: {settings.get('default_host')}:{settings.get('default_port')} variant={settings.get('default_variant')}")
         print()
         menu = [
-            ("1", "Probe / Varianten"),
-            ("2", "PoC-Test (safe/moderate/aggressive)"),
+            ("1", "Probe / variants"),
+            ("2", "PoC test (safe/moderate/aggressive)"),
             ("3", "Benchmark (apex, scaled, …)"),
-            ("4", "Tunnel konfigurieren / testen"),
-            ("5", "Lab Replay (nginx/httpd/envoy)"),
-            ("6", "Logs / Benchmark-CSV"),
-            ("7", "MCP-Server Info"),
-            ("8", "Einstellungen"),
-            ("0", "Beenden"),
+            ("4", "Configure / test tunnel"),
+            ("5", "Lab replay (nginx/httpd/envoy)"),
+            ("6", "Logs / benchmark CSV"),
+            ("7", "MCP server info"),
+            ("8", "Settings"),
+            ("0", "Exit"),
         ]
         for k, label in menu:
             print(f"  [{k}] {label}")
@@ -349,7 +347,7 @@ def interactive_menu() -> int:
                     host=host, port=port, server_name="", tunnel_mode="", proxy_url=""
                 )
                 cmd_probe(ns)
-            _prompt("Enter zum Fortfahren")
+            _prompt("Press Enter to continue")
         elif choice == "2":
             host = _prompt("Host", settings["default_host"])
             variant = _prompt("Variante", settings["default_variant"])
@@ -368,7 +366,7 @@ def interactive_menu() -> int:
                 yes=False,
             )
             cmd_run(ns)
-            _prompt("Enter zum Fortfahren")
+            _prompt("Press Enter to continue")
         elif choice == "3":
             host = _prompt("Host", settings["default_host"])
             mode = _prompt("Mode", settings.get("default_benchmark_mode", "apex_scaled"))
@@ -386,7 +384,7 @@ def interactive_menu() -> int:
                 yes=False,
             )
             cmd_benchmark(ns)
-            _prompt("Enter zum Fortfahren")
+            _prompt("Press Enter to continue")
         elif choice == "4":
             print(f"Modi: {', '.join(TUNNEL_MODES)}")
             mode = _prompt("Tunnel-Mode", tunnel.mode)
@@ -405,28 +403,28 @@ def interactive_menu() -> int:
                 th = _prompt("Test-Host", settings["default_host"])
                 ns2 = argparse.Namespace(tunnel_cmd="test", host=th, port=settings["default_port"], mode="")
                 cmd_tunnel(ns2)
-            _prompt("Enter zum Fortfahren")
+            _prompt("Press Enter to continue")
         elif choice == "5":
             stack = _prompt("Stack (nginx/httpd/envoy)", "nginx")
             ns = argparse.Namespace(stack=stack, action="replay")
             cmd_lab(ns)
-            _prompt("Enter zum Fortfahren")
+            _prompt("Press Enter to continue")
         elif choice == "6":
             cmd_logs(argparse.Namespace(last=10))
-            _prompt("Enter zum Fortfahren")
+            _prompt("Press Enter to continue")
         elif choice == "7":
             cmd_mcp_info(argparse.Namespace())
-            _prompt("Enter zum Fortfahren")
+            _prompt("Press Enter to continue")
         elif choice == "8":
             print(json.dumps(settings, indent=2))
-            key = _prompt("Key setzen (leer=skip)")
+            key = _prompt("Setting key (empty = skip)")
             if key:
-                val = _prompt("Wert")
+                val = _prompt("Value")
                 settings[key] = int(val) if val.isdigit() else val
                 save_cli_settings(settings)
-            _prompt("Enter zum Fortfahren")
+            _prompt("Press Enter to continue")
         else:
-            print("Ungültige Auswahl")
+            print("Invalid choice")
             _prompt("Enter")
 
 
@@ -449,8 +447,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     sub = p.add_subparsers(dest="command")
 
-    sub.add_parser("menu", help="Interaktives ASCII-Menü")
-    sub.add_parser("variants", help="Varianten auflisten")
+    sub.add_parser("menu", help="Interactive ASCII menu")
+    sub.add_parser("variants", help="List variants")
 
     probe = sub.add_parser("probe", help="TLS/ALPN H2 probe")
     probe.add_argument("--host", default=settings["default_host"])
@@ -459,7 +457,7 @@ def build_parser() -> argparse.ArgumentParser:
     probe.add_argument("--tunnel-mode", default="")
     probe.add_argument("--proxy-url", default="")
 
-    run = sub.add_parser("run", help="PoC-Test ausführen")
+    run = sub.add_parser("run", help="Run PoC test")
     run.add_argument("--host", required=True)
     run.add_argument("--port", type=int, default=settings["default_port"])
     run.add_argument("--variant", default=settings["default_variant"])
@@ -472,7 +470,7 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--proxychains-conf", default="")
     run.add_argument("--yes", action="store_true", help="Skip auth prompt")
 
-    bench = sub.add_parser("benchmark", help="Benchmark-Kampagne")
+    bench = sub.add_parser("benchmark", help="Run benchmark campaign")
     bench.add_argument("--host", required=True)
     bench.add_argument("--port", type=int, default=settings["default_port"])
     bench.add_argument("--variant", default=settings["default_variant"])

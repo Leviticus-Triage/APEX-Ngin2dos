@@ -2,9 +2,11 @@
 # Deploy Envoy H2 lab to Proxmox ai-workstation and run apex_cookie_scaled
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 REMOTE="${REMOTE:-danii@192.168.2.116}"
 REMOTE_DIR="${REMOTE_DIR:-~/http2-bomb-lab-envoy}"
-LOCAL_PLUGIN="${LOCAL_PLUGIN:-$HOME/.cursor/plugins/local/http2-bomb-mcp}"
+LOCAL_PLUGIN="${LOCAL_PLUGIN:-$REPO_ROOT}"
 PORT="${PORT:-10000}"
 MEM="${MEM:-8g}"
 

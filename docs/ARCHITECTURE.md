@@ -18,7 +18,16 @@ All paths enforce authorization (`authorization_confirmed`, `--scope`, `--yes` o
 
 ### 2. Benchmark harness
 
-`benchmark/benchmark_runner.py`:
+Modular layout under `benchmark/`:
+
+| Module | Role |
+|--------|------|
+| `cli.py` | argparse + mode dispatch |
+| `attack_runner.py` | Single-run nginx/cookie/IIS attacks |
+| `campaigns/` | ramp, waves, multiprocess, apex, special, full campaign |
+| `probe.py` | curl HTTP/2 probes + during-monitor thread |
+| `persistence.py` | CSV + JSONL logging |
+| `benchmark_runner.py` | Backward-compat entry + re-exports |
 
 - Parses `--variant`, `--mode`, `--tunnel-*`
 - Runs TLS/HTTP2 probes before, during, after attack

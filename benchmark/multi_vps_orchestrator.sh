@@ -6,7 +6,7 @@
 #   user@203.0.113.10
 #   user@203.0.113.11
 #
-# Voraussetzung: http2-bomb-mcp auf jedem VPS unter REMOTE_DIR installiert.
+# Voraussetzung: APEX-Ngin2dos auf jedem VPS unter REMOTE_DIR installiert.
 
 set -euo pipefail
 
@@ -14,7 +14,7 @@ TARGET="${1:?Usage: $0 TARGET_HOST [CONNECTIONS] [MODE] [hosts.txt]}"
 CONNECTIONS="${2:-20}"
 MODE="${3:-multiprocess}"
 HOSTS_FILE="${4:-$(dirname "$0")/hosts.txt.example}"
-REMOTE_DIR="${REMOTE_DIR:-\$HOME/http2-bomb-mcp}"
+REMOTE_DIR="${REMOTE_DIR:-\$HOME/APEX-Ngin2dos}"
 LOG_DIR="$(dirname "$0")/logs/multi_vps_$(date +%Y%m%d_%H%M%S)"
 
 mkdir -p "$LOG_DIR"

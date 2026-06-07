@@ -7,15 +7,27 @@ on:
     branches: [main, master]
 
 jobs:
-  syntax:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements-dev.txt
+      - run: ruff check tests/ benchmark/authorization.py http2_bomb_mcp.py http2_bomb_cli.py
       - run: |
           python3 -m py_compile http2_bomb_mcp.py http2_bomb_cli.py
-          python3 -m py_compile benchmark/*.py
+          python3 -m py_compile benchmark/*.py benchmark/campaigns/*.py
+      - run: pytest -q
       - run: ./bin/http2-bomb --help
+
+  lab-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: chmod +x scripts/ci-lab-smoke.sh lab-replay/replay.sh
+      - run: ./scripts/ci-lab-smoke.sh

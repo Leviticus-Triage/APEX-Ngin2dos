@@ -10,7 +10,7 @@ Primary living document for this project:
 |----------------|-----------------|
 | Project goals & MCP setup | `README.md` |
 | Benchmark campaign results | `docs/LAB_RESULTS.md`, `lab-replay/logs/` |
-| mrx3k1.de hardening | `hardening/README.md` |
+| Hardening examples | `hardening/README.md` |
 | Proxmox lab methodology | `lab-replay/logs/PROXMOX_CAMPAIGN_SUMMARY.md` |
 | Multi-variant APEX rollout | `lab-replay/logs/MULTI_VARIANT_APEX_VERIFICATION.md` |
 | Win11 IIS session | `lab-replay/logs/WIN11_IIS_LAB_20260605.md` |
@@ -19,7 +19,7 @@ Primary living document for this project:
 ## Key Notion findings (summary)
 
 - **Goal:** Operationalize califio PoCs as MCP plugin + logged OOM benchmark harness.
-- **Authorized target:** mrx3k1.de (69.62.121.168), nginx 1.24.0 — vulnerable; patch in nginx ≥1.29.8.
+- **Authorized target:** private nginx 1.24.0 lab — vulnerable; patch in nginx ≥1.29.8 (hostname/IP not in repo).
 - **Lab parity:** 50 connections fill 8 GiB Docker container on Proxmox ai-workstation.
 - **Production ceiling:** ~31 concurrent full bombs from single public IP.
 - **Best single-client strategy:** `optimized_oom` — 4096 headers × 256 streams × 80 conn/cycle.

@@ -46,9 +46,9 @@ Source: `lab-replay/logs/ab_20260604_210143.csv`, `fairness_20260604_211755.csv`
 
 Source: `lab-replay/logs/PROXMOX_CAMPAIGN_SUMMARY.md`
 
-### Production note (mrx3k1.de)
+### Authorized production note (anonymized)
 
-Single public IP ceiling ~**31** concurrent full bombs; no persistent OOM from one client. Lab proves vulnerability; production limited by source IP / nginx worker model.
+On a single public IPv4 address, observed ceiling ~**31** concurrent full bombs; no persistent OOM from one client. Lab Docker/Proxmox runs prove vulnerability at scale; production impact is limited by source IP count and nginx worker model. Details remain in private lab notes — do not commit customer hostnames or IPs.
 
 ---
 

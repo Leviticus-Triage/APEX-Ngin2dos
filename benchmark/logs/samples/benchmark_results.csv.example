@@ -1,0 +1,3 @@
+run_id,timestamp,strategy,target,connections_requested,connections_established,connections_bomb_ok,connections_active_end,wire_mb,hold_sec,probe_before_code,probe_after_code,probe_worst_latency,server_down,oom_likely,duration_sec,notes
+dacca1b8,2026-06-04T21:31:45.000000+00:00,apex_scaled,127.0.0.1:8443,20,20,20,20,40.06,120,200,200,0.088,False,False,165.3,nginx lab-replay 8g cap
+01ea8a01,2026-06-04T22:05:12.000000+00:00,apex_cookie_scaled,127.0.0.1:10080,12,12,12,12,0.19,120,200,200,0.091,False,False,98.4,httpd lab-replay

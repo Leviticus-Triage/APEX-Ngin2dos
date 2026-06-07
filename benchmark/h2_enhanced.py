@@ -1,12 +1,11 @@
 """Enhanced HTTP/2 HPACK bomb — multi-wave, batched bombs, hold modes."""
 from __future__ import annotations
 
-import socket
 import ssl
 import threading
 import time
 
-from attack_config import AttackConfig, H2_MAX_STREAMS_PER_CONN
+from attack_config import H2_MAX_STREAMS_PER_CONN, AttackConfig
 
 _hpack_bomb = None
 _variant_id = "nginx"

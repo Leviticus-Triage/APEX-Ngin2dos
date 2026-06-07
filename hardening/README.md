@@ -1,57 +1,57 @@
-# nginx-Härtung — mrx3k1.de (HTTP/2 HPACK Bomb)
+# nginx hardening — HTTP/2 HPACK bomb (example)
 
-Zielserver: `69.62.121.168` / `mrx3k1.de` — nginx **1.24.0** (Ubuntu), anfällig.
+Example configs for an **authorized lab/production target** running nginx **1.24.x** (vulnerable pre-1.29.8).
 
-## Priorität
+Replace `lab-target.example` with your hostname. Do not commit real customer hostnames or IPs to this repository.
 
-| Prio | Maßnahme | Wirkung |
-|------|----------|---------|
-| **1** | Upgrade nginx **≥ 1.29.8** + `http2_max_headers 100` | Fix laut upstream |
-| **2** | `limit_conn` + niedrigere `http2_max_concurrent_streams` | Bremst Amplification |
-| **3** | `send_timeout 15s` | Window-Stall kürzer |
-| **4** | Notfall: HTTP/2 deaktivieren | Vektor weg, h2-Clients betroffen |
+## Priority
+
+| Priority | Measure | Effect |
+|----------|---------|--------|
+| **1** | Upgrade nginx **≥ 1.29.8** + `http2_max_headers 100` | Upstream fix |
+| **2** | `limit_conn` + lower `http2_max_concurrent_streams` | Slows amplification |
+| **3** | `send_timeout 15s` | Shorter window stall |
+| **4** | Emergency: disable HTTP/2 | Removes vector; affects h2 clients |
 
 ## Deployment (Ubuntu, nginx 1.24.0)
 
 ```bash
-# 1. Config kopieren
+# 1. Copy configs (rename site snippet for your vhost)
 sudo cp nginx-http2-bomb-mrx3k1.conf /etc/nginx/conf.d/
-sudo cp mrx3k1.de.conf /etc/nginx/snippets/   # oder in bestehende site einfügen
+sudo cp mrx3k1.de.conf /etc/nginx/snippets/lab-target.example.conf
 
-# 2. In /etc/nginx/nginx.conf unter http { }:
+# 2. In /etc/nginx/nginx.conf under http { }:
 #    include /etc/nginx/conf.d/nginx-http2-bomb-mrx3k1.conf;
 
-# 3. In sites-available/mrx3k1.de die limit_conn/limit_req Zeilen aus mrx3k1.de.conf übernehmen
+# 3. Merge limit_conn/limit_req lines into your site block
 
 # 4. Test & reload
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-## Upgrade-Pfad (empfohlen)
+## Upgrade path (recommended)
 
 ```bash
-# Ubuntu: nginx.org Mainline oder backports — Ziel >= 1.29.8
-nginx -v   # nach Upgrade prüfen
+nginx -v   # target >= 1.29.8 after upgrade
 
-# Dann nginx-1.29.8-post-upgrade.conf anwenden:
+# Apply nginx-1.29.8-post-upgrade.conf:
 #   http2_max_headers 100;
 ```
 
-## Verifikation nach Härtung
+## Verification after hardening
 
 ```bash
-# Harmlos
-curl -sI --http2 https://mrx3k1.de/
+curl -sI --http2 https://lab-target.example/
 
-# MCP/Plugin (autorisiert)
+# Authorized MCP/CLI:
 # probe_http2 → run_http2_bomb_test profile=safe
-# Erwartung: früher Abbruch / GOAWAY / weniger parallele Streams
+# Expect: early abort / GOAWAY / fewer parallel streams
 ```
 
-## Notfall: HTTP/2 aus
+## Emergency: disable HTTP/2
 
-In der site config `http2` von `listen` entfernen → nur TLS + HTTP/1.1.
+Remove `http2` from the `listen` directive in the site config → TLS + HTTP/1.1 only.
 
-## Referenz
+## Reference
 
-Benchmark-Ergebnisse: Notion-Seite „HTTP/2 Bomb — MCP Plugin & OOM Benchmark“
+Benchmark results: `docs/LAB_RESULTS.md` and local `benchmark/logs/` (not committed).

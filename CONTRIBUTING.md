@@ -20,8 +20,25 @@ Thank you for contributing to APEX Ngin2dos. This project focuses on **reproduci
 
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-python3 -m py_compile benchmark/*.py http2_bomb_mcp.py http2_bomb_cli.py
+pip install -r requirements-dev.txt
+pytest -q
+ruff check tests/ benchmark/authorization.py http2_bomb_mcp.py http2_bomb_cli.py
+```
+
+**Integration / OOM tests** run on Proxmox ai-workstation, not on your laptop:
+
+```bash
+./lab-replay/deploy_proxmox.sh smoke      # quick remote validation
+./lab-replay/deploy_proxmox.sh campaign   # full logged campaign
+```
+
+See [`docs/OPTIMIZATION.md`](docs/OPTIMIZATION.md) for the v1.0.1 release roadmap.
+
+Full local check (unit + Docker lab smoke):
+
+```bash
+chmod +x scripts/verify.sh
+./scripts/verify.sh
 ```
 
 ## Pull request checklist

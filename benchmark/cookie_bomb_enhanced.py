@@ -1,13 +1,11 @@
 """Enhanced cookie-crumb HPACK bomb for httpd and Envoy."""
 from __future__ import annotations
 
-import socket
 import ssl
 import struct
 import threading
 import time
-from dataclasses import dataclass, asdict
-from typing import Any
+from dataclasses import dataclass
 
 from attack_config import CookieAttackConfig
 
@@ -116,7 +114,7 @@ def service_peer(sock: ssl.SSLSocket, seconds: float) -> None:
     while time.monotonic() < deadline:
         try:
             ftype, flags, _, payload = read_frame(sock)
-        except (socket.timeout, ssl.SSLError):
+        except (TimeoutError, ssl.SSLError):
             continue
         except (EOFError, OSError):
             break

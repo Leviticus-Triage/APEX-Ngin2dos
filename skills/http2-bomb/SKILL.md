@@ -7,17 +7,17 @@ description: Run authorized HTTP/2 HPACK-bomb DoS checks via http2-bomb MCP (cal
 
 ## When to use
 
-- Kunde oder eigenes System auf **HTTP/2 HPACK amplification + window stall** (MADBugs/http2-bomb) prüfen
-- Nach Patch: `probe` / `safe` zur Regression
-- Vor vollem PoC: `estimate_http2_bomb_impact` und `list_http2_bomb_variants`
+- Validate **HTTP/2 HPACK amplification + window stall** (MADBugs/http2-bomb) on authorized targets
+- Post-patch regression: `probe` / `safe` profiles
+- Before full PoC: `estimate_http2_bomb_impact` and `list_http2_bomb_variants`
 
 ## Workflow
 
-1. `probe_http2` — TLS + ALPN `h2`, kein Angriff
-2. `list_http2_bomb_variants` — richtige Variante wählen (nginx vs httpd cookie vs envoy …)
-3. Optional: `allowed_targets.json` aus `.example` kopieren und Hosts eintragen
-4. `run_http2_bomb_test` mit `authorization_confirmed=true` und `scope_description` (Ticket/Kunde)
-5. Profil starten mit `safe`, nur bei Bedarf `moderate` / `aggressive`
+1. `probe_http2` — TLS + ALPN `h2`, no attack
+2. `list_http2_bomb_variants` — pick stack (nginx vs httpd cookie vs envoy …)
+3. Optional: copy `allowed_targets.json.example` → `allowed_targets.json`
+4. `run_http2_bomb_test` with `authorization_confirmed=true` and `scope_description` (ticket/customer, min. 12 chars)
+5. Start with `safe`; use `moderate` / `aggressive` only in isolated labs
 
 ## Variant mapping
 
@@ -31,7 +31,7 @@ description: Run authorized HTTP/2 HPACK-bomb DoS checks via http2-bomb MCP (cal
 
 ## Enhanced benchmark (v2)
 
-Module: `variants.py`, `attack_config.py`, `h2_enhanced.py`, `cookie_bomb_enhanced.py`
+Modules: `variants.py`, `attack_config.py`, `campaigns/`, `h2_enhanced.py`, `cookie_bomb_enhanced.py`
 
 | Stack | variant | Apex benchmark modes |
 |-------|---------|----------------------|
@@ -39,32 +39,39 @@ Module: `variants.py`, `attack_config.py`, `h2_enhanced.py`, `cookie_bomb_enhanc
 | httpd / Envoy | `httpd`, `envoy` | `apex_cookie`, `apex_cookie_scaled`, `apex_cookie_mp` |
 | IIS | `microsoft-iis` | `apex_iis_mp` (Windows PowerShell) |
 
+### Lab execution (recommended)
+
+**Do not** probe `127.0.0.1:8443` from your laptop unless Docker lab runs locally.
+
 ```bash
-python3 benchmark/benchmark_runner.py --host TARGET --variant nginx --mode apex_scaled --connections 100 --port 443
-python3 benchmark/benchmark_runner.py --host 127.0.0.1 --variant httpd --mode apex_cookie_scaled --connections 44 --port 10080
+# Deploy + smoke on Proxmox ai-workstation (192.168.2.116)
+./lab-replay/deploy_proxmox.sh smoke
+./lab-replay/deploy_proxmox.sh campaign
+
+# On lab VM directly (nginx Docker @ 127.0.0.1:8443)
+python3 benchmark/benchmark_runner.py --host 127.0.0.1 --port 8443 \
+  --variant nginx --mode apex_scaled --connections 20
 ```
 
-MCP: `run_http2_bomb_benchmark` mit `variant=` und `mode=` (siehe `list_http2_bomb_variants` für Modi pro Variante)
+MCP: `run_http2_bomb_benchmark` with `variant=` and `mode=` (see `list_http2_bomb_variants`).
 
 ## Tunnel
 
-Module: `benchmark/tunnel.py`, `benchmark/tunnel_runner.py`
-
 ```bash
 ./bin/http2-bomb tunnel set --mode tor
-python3 benchmark/benchmark_runner.py --host TARGET --tunnel-mode socks5 \
+python3 benchmark/benchmark_runner.py --host TARGET --allow-remote --tunnel-mode socks5 \
   --proxy-url socks5://127.0.0.1:1080 --mode apex --connections 55
 ```
 
-MCP: `configure_http2_bomb_tunnel`, optional `tunnel_mode`/`proxy_url` on `probe_http2`, `run_http2_bomb_test`, `run_http2_bomb_benchmark`.
+MCP: `configure_http2_bomb_tunnel`, or `tunnel_mode`/`proxy_url` on run tools.
 
 ## Terminal CLI
 
 ```bash
 ./bin/http2-bomb menu
-./bin/http2-bomb probe --host 127.0.0.1
+./bin/http2-bomb probe --host TARGET   # not 127.0.0.1 unless lab is local
 ```
 
 ## Legal
 
-Nur Systeme mit **schriftlicher Erlaubnis**. Kein Scanning fremder Infrastruktur.
+Authorized targets only. No scanning of third-party infrastructure without written permission.
