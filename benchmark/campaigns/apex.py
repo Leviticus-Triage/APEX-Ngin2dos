@@ -13,8 +13,10 @@ from attack_config import (
 from attack_runner import run_attack, run_cookie_attack
 from models import RunResult
 from paths import DEFAULT_PORT
-from .multiprocess import run_cookie_multiprocess, run_multiprocess
 from variants import get_variant
+
+from .multiprocess import run_cookie_multiprocess, run_multiprocess
+
 
 def run_apex(
     host: str,

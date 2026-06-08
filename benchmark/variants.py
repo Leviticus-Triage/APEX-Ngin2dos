@@ -110,14 +110,5 @@ def apex_modes_for_variant(variant_id: str) -> list[str]:
     return list(APEX_MODES_BY_KIND[spec.kind])
 
 
-def poc_script_path(variant_id: str) -> Path:
-    spec = get_variant(variant_id)
-    return spec.resolve_poc_dir() / spec.script_name
-
-
-def apex_modes_for_variant(variant_id: str) -> list[str]:
-    return list(APEX_MODES_BY_KIND[get_variant(variant_id).kind])
-
-
 def get_active_variant() -> str:
     return "nginx"

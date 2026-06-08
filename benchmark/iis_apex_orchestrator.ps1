@@ -5,7 +5,7 @@ param(
     [ValidateSet("8gb","32gb","64gb","96gb")][string]$Preset = "8gb",
     [string]$PocPath = "",
     [string]$PythonExe = "",
-    [string]$InstallRoot = "C:\http2-bomb-mcp",
+    [string]$InstallRoot = "C:\APEX-Ngin2dos",
     [int]$Hold = 120
 )
 

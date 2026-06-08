@@ -46,7 +46,6 @@ Based on [califio/publications HTTP/2 Bomb](https://github.com/califio/publicati
 ## References
 
 - https://github.com/califio/publications/tree/main/MADBugs/http2-bomb
-- Notion research page: https://app.notion.com/p/37530537269d8196a477e358073e8627
 
 ## Responsible disclosure
 

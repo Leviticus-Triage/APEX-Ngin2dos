@@ -22,7 +22,7 @@ Thank you for contributing to APEX Ngin2dos. This project focuses on **reproduci
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements-dev.txt
 pytest -q
-ruff check tests/ benchmark/authorization.py http2_bomb_mcp.py http2_bomb_cli.py
+ruff check .
 ```
 
 **Integration / OOM tests** run on Proxmox ai-workstation, not on your laptop:

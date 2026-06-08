@@ -77,7 +77,6 @@ class H2AttackEnhanced:
         self._base._drain(timeout=timeout)
 
     def connect(self):
-        hb = _hb()
         ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
         ctx.check_hostname = False
         ctx.verify_mode = ssl.CERT_NONE

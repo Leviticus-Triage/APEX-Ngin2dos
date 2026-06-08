@@ -10,12 +10,13 @@ import uuid
 
 from attack_config import profile_max_impact
 from attack_runner import run_attack
-from models import RunResult
+from models import RunResult, ServerProbe
 from paths import DEFAULT_PORT, LOG_DIR
 from persistence import persist_run, utc_now
 from probe import probe_server
 from tunnel_runner import popen as tunnel_popen
 from variants import get_variant, poc_script_path, set_poc_path
+
 
 def run_ramp(host: str, steps: list[int], **kwargs) -> RunResult | None:
     last: RunResult | None = None

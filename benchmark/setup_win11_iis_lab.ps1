@@ -1,7 +1,7 @@
 # Win11 IIS lab setup for http2-bomb apex_iis_mp
 param(
     [string]$ArchiveUrl = "http://192.168.2.50:8888/http2-bomb-mcp-win.tar.gz",
-    [string]$InstallRoot = "C:\http2-bomb-mcp",
+    [string]$InstallRoot = "C:\APEX-Ngin2dos",
     [int]$HttpsPort = 443
 )
 

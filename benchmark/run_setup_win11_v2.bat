@@ -1,14 +1,14 @@
 @echo off
-set LOG=C:\http2-bomb-mcp\logs\setup2.log
-mkdir C:\http2-bomb-mcp\logs 2>nul
+set LOG=C:\APEX-Ngin2dos\logs\setup2.log
+mkdir C:\APEX-Ngin2dos\logs 2>nul
 echo [%TIME%] START>>%LOG%
 
 echo [%TIME%] DISM IIS>>%LOG%
 dism /online /enable-feature /featurename:IIS-WebServerRole /all /norestart >>%LOG% 2>&1
 
 echo [%TIME%] DOWNLOAD>>%LOG%
-curl.exe -s -o C:\http2-bomb-mcp\win.tar.gz http://192.168.2.50:8888/http2-bomb-mcp-win.tar.gz >>%LOG% 2>&1
-tar -xzf C:\http2-bomb-mcp\win.tar.gz -C C:\http2-bomb-mcp >>%LOG% 2>&1
+curl.exe -s -o C:\APEX-Ngin2dos\win.tar.gz http://192.168.2.50:8888/http2-bomb-mcp-win.tar.gz >>%LOG% 2>&1
+tar -xzf C:\APEX-Ngin2dos\win.tar.gz -C C:\APEX-Ngin2dos >>%LOG% 2>&1
 
 echo [%TIME%] WINGET PYTHON>>%LOG%
 winget install -e --id Python.Python.3.12 --accept-package-agreements --accept-source-agreements --silent >>%LOG% 2>&1
@@ -18,7 +18,7 @@ set PATH=%PATH%;C:\Users\Public\AppData\Local\Programs\Python\Python312;C:\Users
 for /f "tokens=*" %%i in ('where python 2^>nul') do set PY=%%i
 if not defined PY set PY=python
 %PY% -m pip install --upgrade pip >>%LOG% 2>&1
-cd /d C:\http2-bomb-mcp
+cd /d C:\APEX-Ngin2dos
 %PY% -m pip install -r requirements.txt >>%LOG% 2>&1
 
 echo [%TIME%] IIS HTTPS>>%LOG%

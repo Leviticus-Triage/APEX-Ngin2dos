@@ -4,9 +4,10 @@ from __future__ import annotations
 import time
 
 from attack_runner import run_attack
+from paths import CSV_PATH, DEFAULT_PORT, JSONL_PATH
+
 from campaigns.multiprocess import run_multiprocess
 from campaigns.waves import run_cumulative_waves, run_ramp
-from paths import CSV_PATH, DEFAULT_PORT, JSONL_PATH
 
 
 def run_full_campaign(host: str, bind_ips: list[str | None] | None = None) -> None:

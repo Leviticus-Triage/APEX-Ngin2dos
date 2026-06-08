@@ -47,7 +47,7 @@ pytest -q
 ## Full changelog
 
 - P0 safe defaults, log hygiene, authorization module
-- P1 pytest (22 tests), ruff, expanded CI
+- P1 pytest (24 tests), ruff (full tree), expanded CI
 - P3 harness modularization, CI lab-replay smoke
 - Proxmox deploy uses repo root (not legacy plugin path)
 - Hardening/docs anonymized for public repo

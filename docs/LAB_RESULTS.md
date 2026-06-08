@@ -71,7 +71,7 @@ Cookie merge amplification is server-side; wire bytes are small by design.
 | Phase | Result |
 |-------|--------|
 | VM | Proxmox 101 @ 192.168.2.104 |
-| Python | 3.12.10 @ C:\http2-bomb-mcp\Python312 |
+| Python | 3.12.10 (lab VM) |
 | Pre-attack HTTPS | HTTP/2 **200** (~52 ms) |
 | Attack | orchestrator preset **8gb** (5 processes) |
 | Post-attack | External probe **timeout** (8s); guest agent timeout |

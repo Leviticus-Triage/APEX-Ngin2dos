@@ -14,8 +14,8 @@ Windows IIS multiprocess HPACK bomb testing via PowerShell orchestrator.
 ## Setup (Win11 VM)
 
 1. Enable IIS Web Server role + subfeatures (W3SVC)
-2. Install Python 3.12+ to e.g. `C:\http2-bomb-mcp\Python312\`
-3. Clone/copy repo to `C:\http2-bomb-mcp\`
+2. Install Python 3.12+ to e.g. `C:\APEX-Ngin2dos\Python312\`
+3. Clone/copy repo to `C:\APEX-Ngin2dos\`
 4. Run `scripts/setup_win11_iis_lab.ps1` or `fix_iis_win11.bat`
 
 ## Run from Linux attacker

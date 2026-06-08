@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
-      - run: ruff check tests/ benchmark/authorization.py http2_bomb_mcp.py http2_bomb_cli.py
+      - run: ruff check .
       - run: |
           python3 -m py_compile http2_bomb_mcp.py http2_bomb_cli.py
           python3 -m py_compile benchmark/*.py benchmark/campaigns/*.py

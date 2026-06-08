@@ -6,17 +6,22 @@ import sys
 import threading
 import time
 import uuid
-
 from pathlib import Path
 
-from attack_config import AttackConfig, CookieAttackConfig, profile_apex_cookie_httpd, profile_efficiency
-from models import RunResult
+from attack_config import (
+    AttackConfig,
+    CookieAttackConfig,
+    profile_apex_cookie_httpd,
+    profile_efficiency,
+)
+from h2_enhanced import configure_h2_variant
+from models import RunResult, ServerProbe
 from paths import BENCH_DIR, DEFAULT_PORT, LOG_DIR
 from persistence import persist_run, utc_now
 from probe import monitor_during, probe_server
 from tunnel_runner import popen as tunnel_popen
-from h2_enhanced import configure_h2_variant
 from variants import get_variant, set_poc_path
+
 
 def _count_mp_workers(log_dir: Path, count: int) -> tuple[int, float]:
     import re

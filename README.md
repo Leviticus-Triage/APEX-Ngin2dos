@@ -44,21 +44,19 @@ Lab-verified on Proxmox (8 GiB Docker caps unless noted):
 
 See [`docs/LAB_RESULTS.md`](docs/LAB_RESULTS.md) for full metrics, A/B comparisons (califio baseline vs APEX v2), and E2E reports.
 
-**Notion project page:** [HTTP/2 Bomb — MCP Plugin & OOM Benchmark](https://app.notion.com/p/37530537269d8196a477e358073e8627)
-
 ---
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  MCP (FastMCP)  │  CLI (bin/http2-bomb)  │  benchmark_runner│
-└────────────────────────────┬────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│   MCP (FastMCP)   │   CLI (bin/http2-bomb)   │  benchmark_runner │
+└────────────────────────────┬───────────────────────────────────┘
                              │
               ┌──────────────┼──────────────┐
               ▼              ▼              ▼
         h2_enhanced   cookie_bomb_enhanced   iis_apex_orchestrator.ps1
-        (nginx/pingora)  (httpd/envoy)       (Windows IIS)
+       (nginx/pingora)    (httpd/envoy)          (Windows IIS)
               │              │              │
               └──────────────┼──────────────┘
                              ▼
@@ -134,6 +132,8 @@ Optional local Docker lab (same VM layout, on your machine):
 | `optimized_oom` | nginx | Efficiency profile for single-client OOM cycles |
 
 Registry: `benchmark/variants.py` — `--variant nginx|pingora|httpd|envoy|iis`
+
+Additional campaign modes (`ramp`, `burst`, `cumulative`, `multiprocess`, `sustained`, `pipelined_sustain`, `full_campaign`) are documented in [`benchmark/README.md`](benchmark/README.md).
 
 ---
 
@@ -219,7 +219,6 @@ Sample nginx mitigation configs for vulnerable stacks (pre-1.29.8):
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Components, data flow, variant dispatch |
 | [`docs/LAB_RESULTS.md`](docs/LAB_RESULTS.md) | Verified metrics, A/B, Proxmox, Win11 IIS |
 | [`docs/DISCLOSURE.md`](docs/DISCLOSURE.md) | CVE/fix status per stack |
-| [`docs/NOTION.md`](docs/NOTION.md) | Link + sync with Notion research page |
 | [`docs/OPTIMIZATION.md`](docs/OPTIMIZATION.md) | Release roadmap (P0–P3) |
 | [`RELEASE_NOTES_v1.0.1.md`](RELEASE_NOTES_v1.0.1.md) | v1.0.1 changelog |
 | [`benchmark/README.md`](benchmark/README.md) | Harness modes, CSV/JSONL logging |
