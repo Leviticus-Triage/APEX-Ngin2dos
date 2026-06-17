@@ -56,8 +56,14 @@ def run_optimized_single_client_oom(host: str, cycles: int = 25) -> None:
     print(f"\n=== OPTIMIZED OOM COMPLETE — logs: {CSV_PATH} ===")
 
 
-def run_churn(host: str, cycles: int = 40, connections: int = 45) -> None:
+def run_churn(
+    host: str,
+    cycles: int = 40,
+    connections: int = 45,
+    port: int | None = None,
+) -> None:
     """Fire-and-forget + multi-wave: max allocation churn, minimal client wire."""
+    target_port = DEFAULT_PORT if port is None else port
     cfg = profile_churn()
     print("=== CHURN MODE (fire-and-forget + 2 waves/conn) ===")
     print(f"Config: {cfg.to_extra()}\n")
@@ -67,7 +73,7 @@ def run_churn(host: str, cycles: int = 40, connections: int = 45) -> None:
         run_attack(
             f"churn_{c + 1}",
             host,
-            DEFAULT_PORT,
+            target_port,
             connections=connections,
             cfg=cfg,
         )

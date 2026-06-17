@@ -33,3 +33,6 @@ benchmark/logs/pipelined_*/
 lab-replay/logs/proxmox_smoke_*.log
 lab-replay/logs/lab_replay_proxmox_*.log
 lab-replay/logs/attack*_mem*.log
+lab-replay/logs/repro_*/
+lab-replay/logs/patch_bypass_*/
+lab-replay/logs/professional_repro_*/

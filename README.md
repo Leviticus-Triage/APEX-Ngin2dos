@@ -192,6 +192,7 @@ Requires `PySocks` for Python socket routing. See [`benchmark/README.md`](benchm
 | Directory | Stack | Port | Command |
 |-----------|-------|------|---------|
 | `lab-replay/` | nginx 1.24 | 8443 | `./lab-replay/replay.sh start 8g` |
+| `lab-replay-patched/` | nginx ≥1.29.8 (patched + hardened) | 8445 / 8446 | `lab-replay-patched/README.md` |
 | `lab-replay-httpd/` | Apache httpd | 10080 | `./lab-replay-httpd/replay.sh start 8g` |
 | `lab-replay-envoy/` | Envoy | 10000 | `./lab-replay-envoy/replay.sh start 8g` |
 | `lab-replay/pingora/` | Pingora (vendor compose) | 8444 | `./lab-replay/pingora/replay.sh start` |
@@ -207,7 +208,9 @@ Windows IIS lab: `benchmark/setup_win11_iis_lab.ps1` + `benchmark/iis_apex_orche
 Sample nginx mitigation configs for vulnerable stacks (pre-1.29.8):
 
 - [`hardening/README.md`](hardening/README.md)
-- `hardening/nginx-1.29.8-post-upgrade.conf` — `http2_max_headers 100`
+- `hardening/nginx-1.29.8-post-upgrade.conf` — `max_headers 100`
+
+**Patch-bypass research (2026):** [`docs/PATCH_BYPASS_REPRODUCTION.md`](docs/PATCH_BYPASS_REPRODUCTION.md) — reproduction on patched nginx/httpd, hardened lab verification, CVE candidate notes.
 - `hardening/nginx-http2-bomb-mrx3k1.conf` — defense-in-depth for nginx 1.24
 
 ---
@@ -219,7 +222,8 @@ Sample nginx mitigation configs for vulnerable stacks (pre-1.29.8):
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Components, data flow, variant dispatch |
 | [`docs/LAB_RESULTS.md`](docs/LAB_RESULTS.md) | Verified metrics, A/B, Proxmox, Win11 IIS |
 | [`docs/DISCLOSURE.md`](docs/DISCLOSURE.md) | CVE/fix status per stack |
-| [`docs/OPTIMIZATION.md`](docs/OPTIMIZATION.md) | Release roadmap (P0–P3) |
+| [`docs/PATCH_BYPASS_REPRODUCTION.md`](docs/PATCH_BYPASS_REPRODUCTION.md) | Patched-stack bypass reproduction + hardened verification |
+| [`docs/disclosure/`](docs/disclosure/) | Vendor report drafts and CVE submission guide |
 | [`RELEASE_NOTES_v1.0.1.md`](RELEASE_NOTES_v1.0.1.md) | v1.0.1 changelog |
 | [`benchmark/README.md`](benchmark/README.md) | Harness modes, CSV/JSONL logging |
 | [`SECURITY.md`](SECURITY.md) | Responsible use policy |

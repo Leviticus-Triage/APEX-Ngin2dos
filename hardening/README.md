@@ -8,7 +8,7 @@ Replace `lab-target.example` with your hostname. Do not commit real customer hos
 
 | Priority | Measure | Effect |
 |----------|---------|--------|
-| **1** | Upgrade nginx **≥ 1.29.8** + `http2_max_headers 100` | Upstream fix |
+| **1** | Upgrade nginx **≥ 1.29.8** + `max_headers 100` | Upstream fix |
 | **2** | `limit_conn` + lower `http2_max_concurrent_streams` | Slows amplification |
 | **3** | `send_timeout 15s` | Shorter window stall |
 | **4** | Emergency: disable HTTP/2 | Removes vector; affects h2 clients |
@@ -35,7 +35,7 @@ sudo nginx -t && sudo systemctl reload nginx
 nginx -v   # target >= 1.29.8 after upgrade
 
 # Apply nginx-1.29.8-post-upgrade.conf:
-#   http2_max_headers 100;
+#   max_headers 100;
 ```
 
 ## Verification after hardening

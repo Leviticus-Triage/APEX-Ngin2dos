@@ -1,0 +1,44 @@
+Subject: Security: mod_http2 post-2.0.41 DoS via fat-cookie HPACK chain (CVE-2026-49975 bypass candidate)
+
+To: security@apache.org
+
+Hello Apache Security Team,
+
+I am reporting a denial-of-service condition in Apache httpd mod_http2 that remains
+exploitable on default configurations after mod_http2 v2.0.41 / CVE-2026-49975.
+
+SUMMARY
+-------
+CVE-2026-49975 (commit 47d3100b25) correctly mitigates the empty cookie-crumb
+HPACK amplification path. I have verified that on httpd 2.4.68 with mod_http2
+2.0.41, a different cookie-based chain — fat dynamic-table cookie (4058 bytes)
+plus indexed references (95/stream, under LimitRequestFields) scaled across
+connections and streams — still causes multi-gigabyte worker memory growth and
+service degradation from a single client with low wire volume.
+
+LAB EVIDENCE (authorized localhost Docker, 8 GiB cap)
+-----------------------------------------------------
+- 800 connections: ~320 MB wire, peak ~4.7 GiB RSS
+- 1200 connections: ~359 MB wire, server_down / oom_likely in harness
+- Original empty-cookie PoC on same image: ~0.19 MB wire, flat RSS (~52 MiB)
+
+I believe this constitutes incomplete remediation of the cookie-class HPACK DoS
+and request a CVE evaluation (new ID or clarification that 2026-49975 remains
+partially open).
+
+Full technical report, reproduction steps, CWE/CVSS notes, and remediation
+suggestions are attached: VENDOR-REPORT-APACHE-CVE-CANDIDATE.md
+
+Reproduction harness (authorized use only):
+https://github.com/Leviticus-Triage/APEX-Ngin2dos
+Profiles: profile_patch_bypass_httpd_fat(), build_httpd_fat_block()
+
+I am happy to coordinate disclosure timing (suggest 90-day embargo), provide
+additional traces, or assist with patch validation.
+
+Best regards,
+Daniel F. Hensen
+[email]
+[PGP key fingerprint if available]
+
+Attachment: VENDOR-REPORT-APACHE-CVE-CANDIDATE.md

@@ -1,0 +1,31 @@
+Subject: Security: default max_headers permits post-1.29.8 HPACK memory exhaustion via connection scaling
+
+To: security@nginx.org
+
+Hello nginx security team,
+
+I am reporting that nginx 1.29.8+ (verified on 1.31.1) remains susceptible to
+remote memory exhaustion when using default max_headers (1000) and standard HTTP/2
+settings.
+
+SUMMARY
+-------
+The max_headers directive blocks the original 32,000-header HPACK bomb. However,
+an attacker can send 999 headers per stream (below the default limit), 128 streams
+per connection, and 200–300+ parallel connections with INITIAL_WINDOW_SIZE=0
+window stall. In authorized lab tests this produced 1+ GiB worker RSS and
+container OOM with ~25–40 MB wire traffic.
+
+This may warrant CVE assignment as insufficient default resource limits (CWE-770)
+or a hardening advisory lowering the recommended default.
+
+Full report attached: VENDOR-REPORT-NGINX-CVE-CANDIDATE.md
+Harness: https://github.com/Leviticus-Triage/APEX-Ngin2dos
+
+I can provide additional logs and coordinate disclosure timing.
+
+Best regards,
+Daniel F. Hensen
+[email]
+
+Attachment: VENDOR-REPORT-NGINX-CVE-CANDIDATE.md
