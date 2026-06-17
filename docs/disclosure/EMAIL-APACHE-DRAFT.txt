@@ -1,44 +1,43 @@
-Subject: Security: mod_http2 post-2.0.41 DoS via fat-cookie HPACK chain (CVE-2026-49975 bypass candidate)
+Subject: CVE-2026-49975 incomplete fix — mod_http2 2.0.41 fat-cookie DoS on httpd 2.4.68
 
 To: security@apache.org
 
 Hello Apache Security Team,
 
 I am reporting a denial-of-service condition in Apache httpd mod_http2 that remains
-exploitable on default configurations after mod_http2 v2.0.41 / CVE-2026-49975.
+exploitable on DEFAULT configurations after httpd 2.4.68 / mod_http2 v2.0.41,
+which your advisory lists as fixing CVE-2026-49975.
 
 SUMMARY
 -------
-CVE-2026-49975 (commit 47d3100b25) correctly mitigates the empty cookie-crumb
-HPACK amplification path. I have verified that on httpd 2.4.68 with mod_http2
-2.0.41, a different cookie-based chain — fat dynamic-table cookie (4058 bytes)
-plus indexed references (95/stream, under LimitRequestFields) scaled across
-connections and streams — still causes multi-gigabyte worker memory growth and
-service degradation from a single client with low wire volume.
+I independently validated post-patch behavior using the APEX-Ngin2dos harness.
 
-LAB EVIDENCE (authorized localhost Docker, 8 GiB cap)
------------------------------------------------------
-- 800 connections: ~320 MB wire, peak ~4.7 GiB RSS
-- 1200 connections: ~359 MB wire, server_down / oom_likely in harness
-- Original empty-cookie PoC on same image: ~0.19 MB wire, flat RSS (~52 MiB)
+1. EMPTY-COOKIE path (original CVE-2026-49975 PoC): MITIGATED on 2.4.68
+   - 44 connections, 1.7 MB wire, flat RSS, probe OK
 
-I believe this constitutes incomplete remediation of the cookie-class HPACK DoS
-and request a CVE evaluation (new ID or clarification that 2026-49975 remains
-partially open).
+2. FAT-COOKIE indexed-reference chain (within LimitRequestFields): NOT MITIGATED
+   - 100 connections, 10 MB wire → oom_likely + server_down
+   - 500+ connections → multi-GiB RSS (prior runs)
 
-Full technical report, reproduction steps, CWE/CVSS notes, and remediation
-suggestions are attached: VENDOR-REPORT-APACHE-CVE-CANDIDATE.md
+The 2.0.41 fix (commit 47d3100b25) addresses empty-crumb accounting but not
+aggregate memory retention on the cookie-merge path (apr_psprintf per merge).
 
-Reproduction harness (authorized use only):
-https://github.com/Leviticus-Triage/APEX-Ngin2dos
-Profiles: profile_patch_bypass_httpd_fat(), build_httpd_fat_block()
+I request CVE evaluation as incomplete remediation of CVE-2026-49975.
 
-I am happy to coordinate disclosure timing (suggest 90-day embargo), provide
-additional traces, or assist with patch validation.
+ATTACHMENTS
+-----------
+- VENDOR-REPORT-APACHE-INCOMPLETE-FIX.md (full technical report)
+- cve_evidence_*.tar.gz from ./scripts/collect-cve-evidence.sh
+
+REPRODUCTION
+------------
+git clone https://github.com/Leviticus-Triage/APEX-Ngin2dos.git
+./lab-replay-httpd/replay.sh build && ./lab-replay-httpd/replay.sh start 8g
+./scripts/collect-cve-evidence.sh --apache-threshold
+
+I offer a 90-day coordinated disclosure embargo and can assist with patch validation.
 
 Best regards,
 Daniel F. Hensen
 [email]
-[PGP key fingerprint if available]
-
-Attachment: VENDOR-REPORT-APACHE-CVE-CANDIDATE.md
+[PGP fingerprint if available]
