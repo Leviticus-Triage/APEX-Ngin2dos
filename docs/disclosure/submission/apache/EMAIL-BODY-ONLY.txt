@@ -1,0 +1,58 @@
+Hello Apache Security Team,
+
+I am reporting a denial-of-service vulnerability in mod_http2 as shipped with
+httpd 2.4.68 (mod_http2 2.0.41), tested against default configuration in an
+authorized local lab.
+
+SUMMARY
+-------
+CVE-2026-49975 remediated empty cookie-crumb field counting, but a distinct
+"fat-cookie + indexed reference" HPACK chain still causes remote memory
+exhaustion.
+
+Evidence (APEX-Ngin2dos harness, localhost Docker lab, 8 GiB cgroup):
+
+  Run fa94b7ad — 800 connections: 800/800 bomb_ok, ~320 MB wire,
+    server_down=true, oom_likely=true
+
+  Run d6b2bce1 — 1200 connections: 879/1200 bomb_ok, ~351 MB wire,
+    server_down=true, oom_likely=true, probe worst latency 15s
+
+Contrast: empty-cookie PoC (original CVE-2026-49975 vector) is blocked on 2.4.68
+with flat RSS (~52 MiB).
+
+The 2.0.41 fix (commit 47d3100b25) addresses empty-crumb accounting but not
+aggregate memory retention on the fat-cookie merge path.
+
+I request CVE evaluation as incomplete remediation of CVE-2026-49975.
+
+ATTACHMENTS
+-----------
+- VENDOR-REPORT-APACHE-CVE-CANDIDATE.md
+- evidence_fa94b7ad.json
+- evidence_d6b2bce1.json
+- apache-cve-evidence.tar.gz (signed bundle; detached .asc included)
+
+REPRODUCTION
+------------
+git clone https://github.com/Leviticus-Triage/APEX-Ngin2dos.git
+cd APEX-Ngin2dos
+./lab-replay-httpd/replay.sh build && ./lab-replay-httpd/replay.sh start 8g
+./scripts/vendor-repro-apache.sh 800
+
+# Or manually (must run from benchmark/):
+cd benchmark
+python3 -c "
+from attack_config import profile_patch_bypass_httpd_fat
+from attack_runner import run_cookie_attack
+run_cookie_attack('vendor_repro', '127.0.0.1', 10080, 800,
+                  profile_patch_bypass_httpd_fat(800), variant_id='httpd')
+"
+
+I offer a 90-day coordinated disclosure embargo and can assist with patch validation.
+
+PGP: FCBC28648F3E7FD91E6C072FE0BC23D2A274D25D
+
+Best regards,
+Daniel F. Hensen
+3xodu2904@gmail.com
