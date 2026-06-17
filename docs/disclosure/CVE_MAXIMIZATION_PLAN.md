@@ -250,7 +250,9 @@ Vendor lehnen ab, wenn Report wie „Blog + Zahlen“ aussieht. Paket muss wie *
 **Option B — Aggressiv (2–3 Wochen):** Phase 1–3 voll → Gold/Platin Finding → ~70 %+ CVE-Chance  
 **Option C — IIS/Windows:** Höchste „neue CVE“-Wahrscheinlichkeit, braucht VM
 
-**Empfehlung: Option B** — zuerst Phase 2A (Trailer/CONTINUATION mit echtem HPACK) + Phase 3 Pingora 0.8.1, **dann** Apache-Mail mit stärkerem Paket.
+**Empfehlung: Option B → R-Enantiomer-Hunt** — siehe **`R-ENANTIOMER-CVE-HUNT-PLAN.md`** (L/R-Framework, Gold-Gate vor Vendor-Mail).
+
+**Nicht einreichen** bis `VECTOR_SCORECARD.md` mindestens ein Gold/Platin-Finding zeigt.
 
 ---
 
