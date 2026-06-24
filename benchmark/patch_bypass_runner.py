@@ -5,23 +5,33 @@ from __future__ import annotations
 import argparse
 import json
 import subprocess
-import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 
 BENCH = Path(__file__).resolve().parent
-sys.path.insert(0, str(BENCH))
 
-from attack_config import (
-    CookieAttackConfig,
-    profile_apex_cookie_scaled,
-    profile_patch_bypass_httpd_fat,
-    profile_patch_bypass_nginx,
-    profile_patch_bypass_nginx_hardened,
-)
-from attack_runner import run_attack, run_cookie_attack
-from campaigns import run_churn, run_multiprocess
+try:
+    from benchmark.attack_config import (
+        CookieAttackConfig,
+        profile_apex_cookie_scaled,
+        profile_patch_bypass_httpd_fat,
+        profile_patch_bypass_nginx,
+        profile_patch_bypass_nginx_hardened,
+    )
+    from benchmark.attack_runner import run_attack, run_cookie_attack
+    from benchmark.campaigns import run_churn, run_multiprocess
+except ModuleNotFoundError:
+    # Fallback when script is executed from inside benchmark/.
+    from attack_config import (
+        CookieAttackConfig,
+        profile_apex_cookie_scaled,
+        profile_patch_bypass_httpd_fat,
+        profile_patch_bypass_nginx,
+        profile_patch_bypass_nginx_hardened,
+    )
+    from attack_runner import run_attack, run_cookie_attack
+    from campaigns import run_churn, run_multiprocess
 
 DEFAULT_LOG_ROOT = BENCH.parent / "lab-replay" / "logs"
 
