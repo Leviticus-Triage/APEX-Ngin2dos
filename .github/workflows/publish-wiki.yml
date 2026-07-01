@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: Andrew-Chen-Wang/github-wiki-action@v4
+      - uses: Andrew-Chen-Wang/github-wiki-action@v5
         with:
           path: wiki
           strategy: init
